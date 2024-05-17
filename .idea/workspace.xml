@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e6730ecd-9b7b-4bf6-81fe-06dbbbbd8425" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Use Maven wrapper" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2gBqW4XHTqbUEkTBXqHocfg5Ttn" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ergih/Desktop/New folder (3)/src/main/java/com/vehicool/vehicool/business/querydsl&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ergih\Desktop\New folder (3)\src\main\java\com\vehicool\vehicool\business\querydsl" />
+      <recent name="C:\Users\ergih\Desktop\New folder (3)\src\main\java\com\vehicool\vehicool\business\service" />
+      <recent name="C:\Users\ergih\Desktop\New folder (3)\src\main\java\com\vehicool\vehicool\persistence\repository" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.vehicool.vehicool.persistence.entity" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.vehicool.vehicool.business.querydsl" />
+      <recent name="com.vehicool.vehicool.api.dto" />
+      <recent name="com.vehicool.vehicool.api.controller" />
+      <recent name="com.vehicool.vehicool.persistence.entity" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="VehicoolApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="vehicool" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.vehicool.vehicool.VehicoolApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e6730ecd-9b7b-4bf6-81fe-06dbbbbd8425" name="Changes" comment="" />
+      <created>1715181347800</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1715181347800</updated>
+      <workItem from="1715181349466" duration="3333000" />
+      <workItem from="1715241758764" duration="28000" />
+      <workItem from="1715283174747" duration="606000" />
+      <workItem from="1715292092470" duration="2874000" />
+      <workItem from="1715331917518" duration="17000" />
+      <workItem from="1715364728756" duration="1201000" />
+      <workItem from="1715414351616" duration="10074000" />
+      <workItem from="1715498036012" duration="5833000" />
+      <workItem from="1715587287909" duration="8000" />
+      <workItem from="1715626361894" duration="1804000" />
+      <workItem from="1715708904339" duration="2885000" />
+      <workItem from="1715761927554" duration="968000" />
+      <workItem from="1715771729244" duration="3617000" />
+      <workItem from="1715847900198" duration="69000" />
+      <workItem from="1715850202733" duration="140000" />
+      <workItem from="1715850389540" duration="1363000" />
+      <workItem from="1715867280226" duration="870000" />
+      <workItem from="1715880275388" duration="5042000" />
+      <workItem from="1715891210569" duration="795000" />
+      <workItem from="1715895177669" duration="2821000" />
+      <workItem from="1715931148233" duration="934000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Lender.java</url>
+          <line>11</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
