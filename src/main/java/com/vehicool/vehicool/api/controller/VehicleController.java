@@ -62,20 +62,6 @@ public class VehicleController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
-    @PostMapping("/create")
-    public ResponseEntity<Object> create(@RequestBody @Valid VehicleDTO vehicleDTO) {
-        try {
-            Vehicle vehicle = modelMapper.map(vehicleDTO, Vehicle.class);
-            vehicle.setAvailable(false);
-            vehicle.setStatus(dataPoolService.getDataPoolById(1l));
-            vehicleService.save(vehicle);
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, RECORD_CREATED);
-        } catch (Exception e) {
-            log.error(ERROR_OCCURRED, e.getMessage());
-            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
-
-        }
-    }
     @GetMapping("/get/{id}")
     public ResponseEntity<Object> get(@PathVariable Long id)  {
         try {
@@ -87,33 +73,7 @@ public class VehicleController {
 
         }
     }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Object> delete(@PathVariable Long id) {
-        try {
-            vehicleService.delete(id);
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, "Vehicle deleted successfuly !");
-        } catch (Exception e) {
-            log.error(ERROR_OCCURRED, e.getMessage());
-            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
-
-
-        }
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody @Valid VehicleDTO vehicleDTO) {
-        try {
-            Vehicle vehicle = vehicleService.getVehicleById(id);
-            modelMapper.map(vehicleDTO, vehicle);
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, "Vehicle updated successfuly !");
-        } catch (Exception e) {
-            log.error(ERROR_OCCURRED, e.getMessage());
-            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
-
-        }
-    }
-    @GetMapping("/images/{id}")
+    @GetMapping("/{id}/images")
     public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable Long id) throws IOException {
         List<byte[]> images = vehicleService.downloadVehiclePicturesById(id);
         return ResponseEntity.status(HttpStatus.OK)

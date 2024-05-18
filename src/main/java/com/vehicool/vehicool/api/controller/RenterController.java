@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.List;
@@ -34,6 +35,7 @@ public class RenterController {
     private final VehicleService vehicleService;
     private final ContractService contractService;
     private final StorageService storageService;
+
     @PostMapping("/create")
     public ResponseEntity<Object> create(@RequestBody @Valid RenterDTO renterDTO) {
         try {
@@ -48,10 +50,11 @@ public class RenterController {
 
         }
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> get(@PathVariable Long id)  {
+
+    @GetMapping("/{renterId}")
+    public ResponseEntity<Object> get(@PathVariable Long renterId) {
         try {
-            Renter renter = renterService.getRenterById(id);
+            Renter renter = renterService.getRenterById(renterId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, renter, RECORD_CREATED);
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -61,10 +64,10 @@ public class RenterController {
     }
 
 
-    @DeleteMapping("/{id}/delete")
-    public ResponseEntity<Object> delete(@PathVariable Long id) {
+    @DeleteMapping("/{renterId}/delete")
+    public ResponseEntity<Object> delete(@PathVariable Long renterId) {
         try {
-            renterService.delete(id);
+            renterService.delete(renterId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, "Renter deleted successfuly !");
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -73,10 +76,10 @@ public class RenterController {
         }
     }
 
-    @PutMapping("/{id}/update")
-    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody @Valid RenterDTO renterDTO) {
+    @PutMapping("/{renterId}/update")
+    public ResponseEntity<Object> update(@PathVariable Long renterId, @RequestBody @Valid RenterDTO renterDTO) {
         try {
-            Renter renter = renterService.getRenterById(id);
+            Renter renter = renterService.getRenterById(renterId);
             modelMapper.map(renterDTO, renter);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, renter, "Renter updated successfuly !");
         } catch (Exception e) {
@@ -85,15 +88,16 @@ public class RenterController {
 
         }
     }
-    @PostMapping("/{id}/rentApply/{vehicleId}")
-    public ResponseEntity<Object> rent(@RequestBody ContractDataDTO contractDTO, @PathVariable Long id, @PathVariable Long vehicleId){
+
+    @PostMapping("/{renterId}/rentApply/{vehicleId}")
+    public ResponseEntity<Object> rent(@RequestBody ContractDataDTO contractDTO, @PathVariable Long renterId, @PathVariable Long vehicleId) {
         try {
-            Renter renter = renterService.getRenterById(id);
-            if(renter==null){
+            Renter renter = renterService.getRenterById(renterId);
+            if (renter == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ENTITY_NOT_FOUND);
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
-            if(vehicle==null){
+            if (vehicle == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found!");
             }
             Contract contract = new Contract();
@@ -104,7 +108,7 @@ public class RenterController {
             contract.setStartDate(contractDTO.getStartDate());
             contract.setEndDate(contractDTO.getStartDate());
             long daysBetween = ChronoUnit.DAYS.between((Temporal) contractDTO.getStartDate(), (Temporal) contractDTO.getStartDate());
-            contract.setTotal(daysBetween*vehicle.getVehicleCommerce().getPricePerDay());
+            contract.setTotal(daysBetween * vehicle.getVehicleCommerce().getPricePerDay());
             //Ids are hard coded corresponding to database since they won't change.Id 17 is enum_name "Waiting"
             DataPool contractualStatus = dataPoolService.getDataPoolById(17l);
             contract.setContractualStatus(contractualStatus);
@@ -117,14 +121,15 @@ public class RenterController {
 
         }
     }
-    @GetMapping("/{id}/active-contract-requests/")
-    public ResponseEntity<Object> getActiveContractRequests(@PathVariable Long id)  {
+
+    @GetMapping("/{renterId}/active-contract-requests/")
+    public ResponseEntity<Object> getActiveContractRequests(@PathVariable Long renterId) {
         try {
-            Renter renter = renterService.getRenterById(id);
-            if(renter==null){
+            Renter renter = renterService.getRenterById(renterId);
+            if (renter == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ENTITY_NOT_FOUND);
             }
-            List<Contract> contracts = renterService.contractRequests(id,17l);
+            List<Contract> contracts = renterService.contractRequests(renterId, 17l);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contracts, RECORD_CREATED);
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -132,35 +137,74 @@ public class RenterController {
 
         }
     }
-    @GetMapping("/{id}/contract-history/")
-    public ResponseEntity<Object> getContractsHistory(@PathVariable Long id)  {
+
+    @GetMapping("/{renterId}/contract-history")
+    public ResponseEntity<Object> getContractsHistory(@PathVariable Long renterId) {
         try {
-            Renter renter = renterService.getRenterById(id);
-            if(renter==null){
+            Renter renter = renterService.getRenterById(renterId);
+            if (renter == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ENTITY_NOT_FOUND);
             }
             List<Contract> contracts = renter.getContractSigned();
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, contracts, RECORD_CREATED);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, contracts, RECORDS_RECEIVED);
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
 
         }
     }
-    @GetMapping("/{id}/active-contract-requests/{contractId}/cancel-contract")
-    public ResponseEntity<Object> getActiveContractRequest(@PathVariable Long id,@PathVariable Long contractId)  {
+
+    @GetMapping("/{renterId}/contract-history/{contractId}")
+    public ResponseEntity<Object> getContract(@PathVariable Long renterId, @PathVariable Long contractId) {
         try {
-            Renter renter = renterService.getRenterById(id);
-            if(renter==null){
+            Renter renter = renterService.getRenterById(renterId);
+            if (renter == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter not found!");
             }
             Contract contract = contractService.getContractById(contractId);
-            if(contract==null){
+            if (contract == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract not found!");
+            }
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, RECORDS_RECEIVED);
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+
+        }
+    }
+
+    @GetMapping("/{renterId}/active-contract-requests/{contractId}/cancel-contract")
+    public ResponseEntity<Object> getActiveContractRequest(@PathVariable Long renterId, @PathVariable Long contractId) {
+        try {
+            Renter renter = renterService.getRenterById(renterId);
+            if (renter == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter not found!");
+            }
+            Contract contract = contractService.getContractById(contractId);
+            if (contract == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract not found!");
             }
             contract.setContractualStatus(dataPoolService.getDataPoolById(18l));
-            contractService.update(contract,contractId);
+            contractService.update(contract, contractId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, "Contract cancelled successfully!");
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+
+        }
+    }
+    @GetMapping("/{renterId}/active-contract-requests/{contractId}")
+    public ResponseEntity<Object> getContractRequest(@PathVariable Long renterId, @PathVariable Long contractId) {
+        try {
+            Renter renter = renterService.getRenterById(renterId);
+            if (renter == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter not found!");
+            }
+            Contract contract = contractService.getContractById(contractId);
+            if (contract == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract not found!");
+            }
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, RECORDS_RECEIVED);
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
