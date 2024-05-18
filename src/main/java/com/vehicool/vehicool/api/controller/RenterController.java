@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.List;
@@ -105,7 +104,7 @@ public class RenterController {
             contract.setPricePerDay(vehicle.getVehicleCommerce().getPricePerDay());
             contract.setStartDate(contractDTO.getStartDate());
             contract.setEndDate(contractDTO.getStartDate());
-            long daysBetween = ChronoUnit.DAYS.between((Temporal) contractDTO.getStartDate(), (Temporal) contractDTO.getStartDate());
+            long daysBetween = ChronoUnit.DAYS.between((java.time.temporal.Temporal) contractDTO.getStartDate(), (Temporal) contractDTO.getStartDate());
             contract.setTotal(daysBetween * vehicle.getVehicleCommerce().getPricePerDay());
             //Ids are hard coded corresponding to database since they won't change.Id 17 is enum_name "Waiting"
             DataPool contractualStatus = dataPoolService.getDataPoolById(17l);

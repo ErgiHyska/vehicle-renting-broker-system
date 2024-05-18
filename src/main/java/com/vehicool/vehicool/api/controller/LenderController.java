@@ -215,8 +215,12 @@ public class LenderController {
     @Transactional
     public ResponseEntity<Object> createVehicle(@PathVariable Long lenderId,@RequestBody @Valid VehicleDTO vehicleDTO) {
         try {
-
+            Lender lender = lenderService.getLenderById(lenderId);
+            if(lender==null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            }
             Vehicle vehicle = modelMapper.map(vehicleDTO, Vehicle.class);
+            vehicle.setLender(lender);
             vehicle.setAvailable(false);
             vehicle.setStatus(dataPoolService.getDataPoolById(1l));
             vehicleService.save(vehicle);
