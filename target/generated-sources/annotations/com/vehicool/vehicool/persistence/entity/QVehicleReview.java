@@ -50,8 +50,8 @@ public class QVehicleReview extends EntityPathBase<VehicleReview> {
 
     public QVehicleReview(Class<? extends VehicleReview> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.renter = inits.isInitialized("renter") ? new QRenter(forProperty("renter")) : null;
-        this.vehicleReviewed = inits.isInitialized("vehicleReviewed") ? new QVehicle(forProperty("vehicleReviewed")) : null;
+        this.renter = inits.isInitialized("renter") ? new QRenter(forProperty("renter"), inits.get("renter")) : null;
+        this.vehicleReviewed = inits.isInitialized("vehicleReviewed") ? new QVehicle(forProperty("vehicleReviewed"), inits.get("vehicleReviewed")) : null;
     }
 
 }

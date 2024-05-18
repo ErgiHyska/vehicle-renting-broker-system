@@ -54,9 +54,9 @@ public class QConfidentialFile extends EntityPathBase<ConfidentialFile> {
 
     public QConfidentialFile(Class<? extends ConfidentialFile> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.lender = inits.isInitialized("lender") ? new QLender(forProperty("lender")) : null;
-        this.renter = inits.isInitialized("renter") ? new QRenter(forProperty("renter")) : null;
-        this.vehicle = inits.isInitialized("vehicle") ? new QVehicle(forProperty("vehicle")) : null;
+        this.lender = inits.isInitialized("lender") ? new QLender(forProperty("lender"), inits.get("lender")) : null;
+        this.renter = inits.isInitialized("renter") ? new QRenter(forProperty("renter"), inits.get("renter")) : null;
+        this.vehicle = inits.isInitialized("vehicle") ? new QVehicle(forProperty("vehicle"), inits.get("vehicle")) : null;
     }
 
 }

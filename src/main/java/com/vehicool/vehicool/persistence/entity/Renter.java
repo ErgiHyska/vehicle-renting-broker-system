@@ -1,5 +1,6 @@
 package com.vehicool.vehicool.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,15 +31,19 @@ public class Renter {
     @Column(name="phone_number",nullable = false)
     private String phoneNumber;
 
-    @Column(name="status",nullable = false)
-    private String status;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "status")
+    private DataPool status;
 
     @OneToMany(mappedBy ="renter")
+    @JsonBackReference
     private List<Contract> contractSigned;
 
     @OneToMany(mappedBy ="renter")
+    @JsonBackReference
     private List<RenterReview> reviewsRecieved;
 
     @OneToMany(mappedBy ="renter")
+    @JsonBackReference
     private List<LenderReview> reviewsGiven;
 }

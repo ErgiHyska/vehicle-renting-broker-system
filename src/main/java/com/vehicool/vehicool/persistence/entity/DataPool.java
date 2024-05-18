@@ -1,5 +1,6 @@
 package com.vehicool.vehicool.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,5 +23,6 @@ public class DataPool {
     private String enumName;
 
     @OneToMany(mappedBy = "enumLabel")
+    @JsonBackReference
     private List<TranslatedDataPool> translatedDataPoolList;
 }

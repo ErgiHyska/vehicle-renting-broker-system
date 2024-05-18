@@ -1,11 +1,17 @@
 package com.vehicool.vehicool.api.controller;
 
+import com.vehicool.vehicool.api.dto.StatusDTO;
 import com.vehicool.vehicool.business.querydsl.LenderFilter;
 import com.vehicool.vehicool.business.querydsl.RenterFilter;
+import com.vehicool.vehicool.business.querydsl.VehicleFilter;
+import com.vehicool.vehicool.business.service.DataPoolService;
 import com.vehicool.vehicool.business.service.LenderService;
 import com.vehicool.vehicool.business.service.RenterService;
+import com.vehicool.vehicool.business.service.VehicleService;
+import com.vehicool.vehicool.persistence.entity.DataPool;
 import com.vehicool.vehicool.persistence.entity.Lender;
 import com.vehicool.vehicool.persistence.entity.Renter;
+import com.vehicool.vehicool.persistence.entity.Vehicle;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -20,10 +26,7 @@ import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -38,12 +41,15 @@ public class AdminController {
     private final ModelMapper modelMapper;
     private final RenterService renterService;
     private final LenderService lenderService;
+    private final DataPoolService dataPoolService;
+    private final VehicleService vehicleService;
+
     @GetMapping("/list-all-renters")
     @Transactional
     public ResponseEntity<Object> listRenters(@Valid @RequestParam Map<String, Object> renterFilterRequest,
-                                       @RequestParam(defaultValue = "0") Integer page,
-                                       @RequestParam(defaultValue = "10") Integer size,
-                                       @RequestParam(defaultValue = "id") String sort) {
+                                              @RequestParam(defaultValue = "0") Integer page,
+                                              @RequestParam(defaultValue = "10") Integer size,
+                                              @RequestParam(defaultValue = "id") String sort) {
         try {
             RenterFilter renterFilter = modelMapper.map(renterFilterRequest, RenterFilter.class);
             Pageable pageRequest = PageRequest.of(page, size, Sort.by(sort));
@@ -59,12 +65,13 @@ public class AdminController {
         }
     }
 
+
     @GetMapping("/list-all-lenders")
     @Transactional
     public ResponseEntity<Object> listLenders(@Valid @RequestParam Map<String, Object> lenderFilterRequest,
-                                       @RequestParam(defaultValue = "0") Integer page,
-                                       @RequestParam(defaultValue = "10") Integer size,
-                                       @RequestParam(defaultValue = "id") String sort) {
+                                              @RequestParam(defaultValue = "0") Integer page,
+                                              @RequestParam(defaultValue = "10") Integer size,
+                                              @RequestParam(defaultValue = "id") String sort) {
         try {
             LenderFilter lenderFilter = modelMapper.map(lenderFilterRequest, LenderFilter.class);
             Pageable pageRequest = PageRequest.of(page, size, Sort.by(sort));
@@ -79,6 +86,92 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+    @GetMapping("/list-all-vehicles")
+    @Transactional
+    public ResponseEntity<Object> listVehicles(@Valid @RequestParam Map<String, Object> vehicleFilterRequest,
+                                               @RequestParam(defaultValue = "0") Integer page,
+                                               @RequestParam(defaultValue = "10") Integer size,
+                                               @RequestParam(defaultValue = "id") String sort) {
+        try {
+            VehicleFilter vehicleFilter = modelMapper.map(vehicleFilterRequest, VehicleFilter.class);
+            Pageable pageRequest = PageRequest.of(page, size, Sort.by(sort));
+            Page<Vehicle> vehiclePage = vehicleService.findAll(vehicleFilter, pageRequest);
+
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehiclePage, RECORDS_RECEIVED);
+        } catch (PropertyReferenceException e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        } catch (Exception ex) {
+            log.error(ERROR_OCCURRED, ex.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/list-all-lenders/{id}/set-status")
+    @Transactional
+    public ResponseEntity<Object> setLenderStatus(@RequestBody StatusDTO statusDTO, @PathVariable Long id) {
+        try {
+            Lender lender = lenderService.getLenderById(id);
+            if (lender == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            }
+            DataPool status = dataPoolService.getDataPoolById(id);
+            if (status == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            }
+            lender.setStatus(status);
+            lenderService.update(lender, id);
+
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, status.getEnumLabel(), "Lender status is set!");
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
+
+    @PostMapping("/list-all-renters/{id}/set-status")
+    @Transactional
+    public ResponseEntity<Object> setRenterStatus(@RequestBody StatusDTO statusDTO, @PathVariable Long id) {
+        try {
+            Renter renter = renterService.getRenterById(id);
+            if (renter == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter not found !");
+            }
+            DataPool status = dataPoolService.getDataPoolById(id);
+            if (status == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter not found !");
+            }
+            renter.setStatus(status);
+            renterService.update(renter, id);
+
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, status.getEnumLabel(), "Renter status is set!");
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
+
+
+
+    @PostMapping("/list-all-vehicles/{id}/set-status")
+    @Transactional
+    public ResponseEntity<Object> setVehicleStatus(@RequestBody StatusDTO statusDTO, @PathVariable Long id) {
+        try {
+            Vehicle vehicle = vehicleService.getVehicleById(id);
+            if (vehicle == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            }
+            DataPool status = dataPoolService.getDataPoolById(id);
+            if (status == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            }
+            vehicle.setStatus(status);
+            vehicleService.update(vehicle, id);
+
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, status.getEnumLabel(), "Lender status is set!");
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
+
 
 }
 

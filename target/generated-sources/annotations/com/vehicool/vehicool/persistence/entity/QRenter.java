@@ -18,6 +18,8 @@ public class QRenter extends EntityPathBase<Renter> {
 
     private static final long serialVersionUID = 56266901L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QRenter renter = new QRenter("renter");
 
     public final NumberPath<Integer> age = createNumber("age", Integer.class);
@@ -38,18 +40,27 @@ public class QRenter extends EntityPathBase<Renter> {
 
     public final ListPath<RenterReview, QRenterReview> reviewsRecieved = this.<RenterReview, QRenterReview>createList("reviewsRecieved", RenterReview.class, QRenterReview.class, PathInits.DIRECT2);
 
-    public final StringPath status = createString("status");
+    public final QDataPool status;
 
     public QRenter(String variable) {
-        super(Renter.class, forVariable(variable));
+        this(Renter.class, forVariable(variable), INITS);
     }
 
     public QRenter(Path<? extends Renter> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QRenter(PathMetadata metadata) {
-        super(Renter.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QRenter(PathMetadata metadata, PathInits inits) {
+        this(Renter.class, metadata, inits);
+    }
+
+    public QRenter(Class<? extends Renter> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.status = inits.isInitialized("status") ? new QDataPool(forProperty("status")) : null;
     }
 
 }

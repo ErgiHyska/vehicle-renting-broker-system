@@ -1,10 +1,12 @@
 package com.vehicool.vehicool.api.controller;
 
 import com.vehicool.vehicool.api.dto.RenterDTO;
+import com.vehicool.vehicool.business.service.DataPoolService;
 import com.vehicool.vehicool.business.service.RenterService;
 import com.vehicool.vehicool.business.service.StorageService;
 import com.vehicool.vehicool.business.service.VehicleService;
 import com.vehicool.vehicool.persistence.entity.Renter;
+import com.vehicool.vehicool.persistence.entity.Vehicle;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +30,15 @@ import static com.vehicool.vehicool.util.constants.Messages.*;
 public class RenterController {
     private final ModelMapper modelMapper;
     private final RenterService renterService;
+    private final DataPoolService dataPoolService;
+    private final VehicleService vehicleService;
     private final StorageService storageService;
     @PostMapping("/create")
-    public ResponseEntity<Object> create(@RequestBody @Valid RenterDTO renterDTO, @RequestParam("image") MultipartFile file) throws IOException {
+    public ResponseEntity<Object> create(@RequestBody @Valid RenterDTO renterDTO) {
         try {
             Renter renter = modelMapper.map(renterDTO, Renter.class);
+
+            renter.setStatus(dataPoolService.getDataPoolById(1l));
             renterService.save(renter);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, renter, RECORD_CREATED);
         } catch (Exception e) {
@@ -41,7 +47,7 @@ public class RenterController {
 
         }
     }
-    @PostMapping("/get/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> get(@PathVariable Long id)  {
         try {
             Renter renter = renterService.getRenterById(id);
@@ -53,7 +59,8 @@ public class RenterController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+
+    @DeleteMapping("/{id}/delete")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
         try {
             renterService.delete(id);
@@ -65,12 +72,31 @@ public class RenterController {
         }
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}/update")
     public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody @Valid RenterDTO renterDTO) {
         try {
             Renter renter = renterService.getRenterById(id);
             modelMapper.map(renterDTO, renter);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, renter, "Renter updated successfuly !");
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+
+        }
+    }
+    @PostMapping("/{id}/rent/{vehicleId}")
+    public ResponseEntity<Object> rent(@PathVariable Long id, @PathVariable Long vehicleId){
+        try {
+            Renter renter = renterService.getRenterById(id);
+            if(renter!=null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ENTITY_NOT_FOUND);
+            }
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            if(vehicle!=null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found!");
+            }
+
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, renter, RECORD_CREATED);
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());

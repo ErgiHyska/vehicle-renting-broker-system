@@ -42,7 +42,7 @@ public class VehicleQueryDsl implements QueryDsl<VehicleFilter> {
         if (filter.getNoOfSeats()!=null) {
             query.and(qVehicle.noOfSeats.eq(filter.getNoOfSeats()));
         }
-        if (filter.getAvailable()) {
+        if (filter.getAvailable()!=null) {
             query.and(qVehicle.available);
         }
         if (filter.getProductionYear()!=null) {

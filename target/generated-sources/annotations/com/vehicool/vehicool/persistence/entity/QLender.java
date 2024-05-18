@@ -18,6 +18,8 @@ public class QLender extends EntityPathBase<Lender> {
 
     private static final long serialVersionUID = -115523381L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QLender lender = new QLender("lender");
 
     public final NumberPath<Integer> age = createNumber("age", Integer.class);
@@ -40,18 +42,29 @@ public class QLender extends EntityPathBase<Lender> {
 
     public final ListPath<LenderReview, QLenderReview> reviewsRecieved = this.<LenderReview, QLenderReview>createList("reviewsRecieved", LenderReview.class, QLenderReview.class, PathInits.DIRECT2);
 
-    public final StringPath status = createString("status");
+    public final QDataPool status;
+
+    public final ListPath<Vehicle, QVehicle> vehicles = this.<Vehicle, QVehicle>createList("vehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
 
     public QLender(String variable) {
-        super(Lender.class, forVariable(variable));
+        this(Lender.class, forVariable(variable), INITS);
     }
 
     public QLender(Path<? extends Lender> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QLender(PathMetadata metadata) {
-        super(Lender.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QLender(PathMetadata metadata, PathInits inits) {
+        this(Lender.class, metadata, inits);
+    }
+
+    public QLender(Class<? extends Lender> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.status = inits.isInitialized("status") ? new QDataPool(forProperty("status")) : null;
     }
 
 }

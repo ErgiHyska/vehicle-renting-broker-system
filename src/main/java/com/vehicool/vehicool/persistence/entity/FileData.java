@@ -1,5 +1,6 @@
 package com.vehicool.vehicool.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,10 +26,12 @@ public class FileData {
     private String filePath;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "lender_id")
     private Lender lender;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 }

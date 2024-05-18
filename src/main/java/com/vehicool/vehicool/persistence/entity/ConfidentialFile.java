@@ -1,5 +1,6 @@
 package com.vehicool.vehicool.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,13 +28,16 @@ public class ConfidentialFile {
 
     @ManyToOne
     @JoinColumn(name = "lender_id")
+    @JsonBackReference
     private Lender lender;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "renter_id")
     private Renter renter;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 }

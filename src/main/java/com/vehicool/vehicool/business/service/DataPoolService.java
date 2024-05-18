@@ -5,6 +5,8 @@ import com.vehicool.vehicool.persistence.repository.DataPoolRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class DataPoolService {
@@ -25,6 +27,9 @@ public class DataPoolService {
     public DataPool update(DataPool dataPool,Long Id){
         dataPool.setId(Id);
         return dataPoolRepository.saveAndFlush(dataPool);
+    }
+    public List<DataPool> findAllByEnumName(String enumName){
+        return dataPoolRepository.findAllByEnumName(enumName);
     }
 
 

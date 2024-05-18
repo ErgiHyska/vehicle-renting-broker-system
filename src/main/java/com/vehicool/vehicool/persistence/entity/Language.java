@@ -1,5 +1,6 @@
 package com.vehicool.vehicool.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class Language {
     private String languageShortCode;
 
     @OneToMany(mappedBy = "language")
+    @JsonBackReference
     private List<TranslatedDataPool> translatedDataPoolList;
 
 }

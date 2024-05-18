@@ -42,14 +42,19 @@ public class Vehicle {
     @Column(name="no_of_seats",nullable = false)
     private Long noOfSeats;
 
-    @Column(name="status",nullable = false)
-    private String status;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "status")
+    private DataPool status;
 
     @Column(name="available",nullable = false)
     private Boolean available;
 
     @Column(name="production_year",nullable = false)
     private Long productionYear;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "lender_id")
+    private Lender lender;
 
     @OneToMany(mappedBy ="vehicle")
     private List<Contract> contractSigned;
@@ -60,4 +65,6 @@ public class Vehicle {
     @OneToMany(mappedBy ="vehicle")
     private List<FileData> images;
 
+    @OneToOne(mappedBy ="vehicle")
+    private VehicleCommerce vehicleCommerce;
 }

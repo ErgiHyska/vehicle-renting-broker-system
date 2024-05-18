@@ -50,8 +50,8 @@ public class QLenderReview extends EntityPathBase<LenderReview> {
 
     public QLenderReview(Class<? extends LenderReview> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.lender = inits.isInitialized("lender") ? new QLender(forProperty("lender")) : null;
-        this.renter = inits.isInitialized("renter") ? new QRenter(forProperty("renter")) : null;
+        this.lender = inits.isInitialized("lender") ? new QLender(forProperty("lender"), inits.get("lender")) : null;
+        this.renter = inits.isInitialized("renter") ? new QRenter(forProperty("renter"), inits.get("renter")) : null;
     }
 
 }

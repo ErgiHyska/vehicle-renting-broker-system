@@ -2,6 +2,7 @@ package com.vehicool.vehicool.api.controller;
 
 import com.vehicool.vehicool.api.dto.VehicleDTO;
 import com.vehicool.vehicool.business.querydsl.VehicleFilter;
+import com.vehicool.vehicool.business.service.DataPoolService;
 import com.vehicool.vehicool.business.service.StorageService;
 import com.vehicool.vehicool.business.service.VehicleService;
 import com.vehicool.vehicool.persistence.entity.Vehicle;
@@ -37,6 +38,7 @@ public class VehicleController {
 
     private final ModelMapper modelMapper;
     private final VehicleService vehicleService;
+    private final DataPoolService dataPoolService;
     private final StorageService storageService;
 
 
@@ -60,13 +62,12 @@ public class VehicleController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
-//@RequestParam("image")MultipartFile file
     @PostMapping("/create")
     public ResponseEntity<Object> create(@RequestBody @Valid VehicleDTO vehicleDTO) {
         try {
             Vehicle vehicle = modelMapper.map(vehicleDTO, Vehicle.class);
             vehicle.setAvailable(false);
-            vehicle.setStatus("Pending");
+            vehicle.setStatus(dataPoolService.getDataPoolById(1l));
             vehicleService.save(vehicle);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, RECORD_CREATED);
         } catch (Exception e) {
@@ -75,7 +76,7 @@ public class VehicleController {
 
         }
     }
-    @PostMapping("/get/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<Object> get(@PathVariable Long id)  {
         try {
             Vehicle vehicle = vehicleService.getVehicleById(id);
