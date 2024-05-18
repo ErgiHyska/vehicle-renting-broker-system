@@ -1,10 +1,9 @@
 package com.vehicool.vehicool.api.controller;
 
+import com.vehicool.vehicool.api.dto.ContractDataDTO;
 import com.vehicool.vehicool.api.dto.RenterDTO;
-import com.vehicool.vehicool.business.service.DataPoolService;
-import com.vehicool.vehicool.business.service.RenterService;
-import com.vehicool.vehicool.business.service.StorageService;
-import com.vehicool.vehicool.business.service.VehicleService;
+import com.vehicool.vehicool.business.service.*;
+import com.vehicool.vehicool.persistence.entity.Contract;
 import com.vehicool.vehicool.persistence.entity.Renter;
 import com.vehicool.vehicool.persistence.entity.Vehicle;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
@@ -19,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
@@ -32,6 +33,7 @@ public class RenterController {
     private final RenterService renterService;
     private final DataPoolService dataPoolService;
     private final VehicleService vehicleService;
+    private final ContractService contractService;
     private final StorageService storageService;
     @PostMapping("/create")
     public ResponseEntity<Object> create(@RequestBody @Valid RenterDTO renterDTO) {
@@ -85,7 +87,7 @@ public class RenterController {
         }
     }
     @PostMapping("/{id}/rent/{vehicleId}")
-    public ResponseEntity<Object> rent(@PathVariable Long id, @PathVariable Long vehicleId){
+    public ResponseEntity<Object> rent(@RequestBody ContractDataDTO contractDTO, @PathVariable Long id, @PathVariable Long vehicleId){
         try {
             Renter renter = renterService.getRenterById(id);
             if(renter!=null){
@@ -95,6 +97,16 @@ public class RenterController {
             if(vehicle!=null){
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found!");
             }
+            Contract contract = new Contract();
+            contract.setRenter(renter);
+            contract.setLender(vehicle.getLender());
+            contract.setVehicle(vehicle);
+            contract.setPricePerDay(vehicle.getVehicleCommerce().getPricePerDay());
+            contract.setStartDate(contractDTO.getStartDate());
+            contract.setEndDate(contractDTO.getStartDate());
+            long daysBetween = ChronoUnit.DAYS.between((Temporal) contractDTO.getStartDate(), (Temporal) contractDTO.getStartDate());
+            contract.setTotal(daysBetween*vehicle.getVehicleCommerce().getPricePerDay());
+            contractService.save(contract);
 
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, renter, RECORD_CREATED);
         } catch (Exception e) {

@@ -23,6 +23,9 @@ public class Contract {
     @Column(name="price_per_day",nullable = false)
     Double pricePerDay;
 
+    @Column(name="total",nullable = false)
+    Double total;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "lender_id",nullable = false)
     private Lender lender;
