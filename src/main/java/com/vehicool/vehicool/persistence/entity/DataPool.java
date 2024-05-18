@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "contract")
+@Table(name = "data_pool")
 public class DataPool {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +25,8 @@ public class DataPool {
     @OneToMany(mappedBy = "enumLabel")
     @JsonBackReference
     private List<TranslatedDataPool> translatedDataPoolList;
+
+    @OneToMany(mappedBy = "contractualStatus", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Contract> contractList;
 }

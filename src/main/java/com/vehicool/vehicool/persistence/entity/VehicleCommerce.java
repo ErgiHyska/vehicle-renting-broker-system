@@ -20,7 +20,7 @@ public class VehicleCommerce {
     @JoinColumn(name = "vehicleId")
     private Vehicle vehicle;
 
-    @Column(name = "date_available")
+    @Column(name = "date_available",nullable = false)
     private Double pricePerDay;
 
     @Column(name = "maxim_date_available")

@@ -20,6 +20,8 @@ public class QDataPool extends EntityPathBase<DataPool> {
 
     public static final QDataPool dataPool = new QDataPool("dataPool");
 
+    public final ListPath<Contract, QContract> contractList = this.<Contract, QContract>createList("contractList", Contract.class, QContract.class, PathInits.DIRECT2);
+
     public final StringPath enumLabel = createString("enumLabel");
 
     public final StringPath enumName = createString("enumName");

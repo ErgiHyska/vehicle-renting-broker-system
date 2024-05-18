@@ -22,6 +22,8 @@ public class QContract extends EntityPathBase<Contract> {
 
     public static final QContract contract = new QContract("contract");
 
+    public final QDataPool contractualStatus;
+
     public final DateTimePath<java.util.Date> endDate = createDateTime("endDate", java.util.Date.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
@@ -33,6 +35,8 @@ public class QContract extends EntityPathBase<Contract> {
     public final QRenter renter;
 
     public final DateTimePath<java.util.Date> startDate = createDateTime("startDate", java.util.Date.class);
+
+    public final NumberPath<Double> total = createNumber("total", Double.class);
 
     public final QVehicle vehicle;
 
@@ -54,6 +58,7 @@ public class QContract extends EntityPathBase<Contract> {
 
     public QContract(Class<? extends Contract> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.contractualStatus = inits.isInitialized("contractualStatus") ? new QDataPool(forProperty("contractualStatus")) : null;
         this.lender = inits.isInitialized("lender") ? new QLender(forProperty("lender"), inits.get("lender")) : null;
         this.renter = inits.isInitialized("renter") ? new QRenter(forProperty("renter"), inits.get("renter")) : null;
         this.vehicle = inits.isInitialized("vehicle") ? new QVehicle(forProperty("vehicle"), inits.get("vehicle")) : null;

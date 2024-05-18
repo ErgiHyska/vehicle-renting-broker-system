@@ -4,6 +4,7 @@ import com.vehicool.vehicool.api.dto.ContractDataDTO;
 import com.vehicool.vehicool.api.dto.RenterDTO;
 import com.vehicool.vehicool.business.service.*;
 import com.vehicool.vehicool.persistence.entity.Contract;
+import com.vehicool.vehicool.persistence.entity.DataPool;
 import com.vehicool.vehicool.persistence.entity.Renter;
 import com.vehicool.vehicool.persistence.entity.Vehicle;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
@@ -86,7 +87,7 @@ public class RenterController {
 
         }
     }
-    @PostMapping("/{id}/rent/{vehicleId}")
+    @PostMapping("/{id}/rentApply/{vehicleId}")
     public ResponseEntity<Object> rent(@RequestBody ContractDataDTO contractDTO, @PathVariable Long id, @PathVariable Long vehicleId){
         try {
             Renter renter = renterService.getRenterById(id);
@@ -106,6 +107,8 @@ public class RenterController {
             contract.setEndDate(contractDTO.getStartDate());
             long daysBetween = ChronoUnit.DAYS.between((Temporal) contractDTO.getStartDate(), (Temporal) contractDTO.getStartDate());
             contract.setTotal(daysBetween*vehicle.getVehicleCommerce().getPricePerDay());
+            DataPool contractualStatus = dataPoolService.getDataPoolById(4l);
+            contract.setContractualStatus(contractualStatus);
             contractService.save(contract);
 
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, renter, RECORD_CREATED);

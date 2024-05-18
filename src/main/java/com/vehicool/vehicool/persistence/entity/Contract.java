@@ -38,4 +38,8 @@ public class Contract {
     @JoinColumn(name = "renter_id",nullable = false)
     private Renter renter;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "contractual_status",nullable = false)
+    private DataPool contractualStatus;
+
 }
