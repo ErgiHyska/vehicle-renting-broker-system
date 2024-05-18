@@ -3,21 +3,13 @@ package com.vehicool.vehicool.api.controller;
 import com.vehicool.vehicool.api.dto.LenderDTO;
 import com.vehicool.vehicool.api.dto.StatusDTO;
 import com.vehicool.vehicool.api.dto.VehicleCommercialDTO;
-import com.vehicool.vehicool.business.querydsl.VehicleFilter;
 import com.vehicool.vehicool.business.service.*;
-import com.vehicool.vehicool.persistence.entity.Contract;
-import com.vehicool.vehicool.persistence.entity.Lender;
-import com.vehicool.vehicool.persistence.entity.Vehicle;
-import com.vehicool.vehicool.persistence.entity.VehicleCommerce;
+import com.vehicool.vehicool.persistence.entity.*;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +18,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
@@ -161,7 +152,7 @@ public class LenderController {
             if(lender==null){
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
-            List<Contract> contracts = lenderService.contractRequests(id,4l);
+            List<Contract> contracts = lenderService.contractRequests(id,17l);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contracts, RECORDS_RECEIVED);
         } catch (PropertyReferenceException e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -183,7 +174,11 @@ public class LenderController {
             if(contract==null){
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract request not found !");
             }
-            contract.setContractualStatus(dataPoolService.getDataPoolById(statusDTO.getStatusId()));
+            DataPool status=dataPoolService.getDataPoolById(statusDTO.getStatusId());
+            if(status==null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Status not found !");
+            }
+            contract.setContractualStatus(status);
             contractService.update(contract,contractId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, "Contract status updated !");
         } catch (PropertyReferenceException e) {

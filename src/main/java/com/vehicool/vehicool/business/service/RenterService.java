@@ -4,12 +4,15 @@ package com.vehicool.vehicool.business.service;
 import com.querydsl.core.types.Predicate;
 import com.vehicool.vehicool.business.querydsl.RenterFilter;
 import com.vehicool.vehicool.business.querydsl.RenterQueryDsl;
+import com.vehicool.vehicool.persistence.entity.Contract;
 import com.vehicool.vehicool.persistence.entity.Renter;
 import com.vehicool.vehicool.persistence.repository.RenterRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -39,5 +42,8 @@ public class RenterService {
     public Page<Renter> findAll(RenterFilter renterFilter, Pageable pageRequest) {
         Predicate filter = renterQueryDsl.filter(renterFilter);
         return renterRepository.findAll(filter, pageRequest);
+    }
+    public List<Contract> contractRequests(Long renterId, Long statusId){
+        return renterRepository.contractRequests(renterId,statusId);
     }
 }

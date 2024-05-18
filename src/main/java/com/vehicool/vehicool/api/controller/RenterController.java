@@ -16,11 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.util.List;
 
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
@@ -91,11 +89,11 @@ public class RenterController {
     public ResponseEntity<Object> rent(@RequestBody ContractDataDTO contractDTO, @PathVariable Long id, @PathVariable Long vehicleId){
         try {
             Renter renter = renterService.getRenterById(id);
-            if(renter!=null){
+            if(renter==null){
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ENTITY_NOT_FOUND);
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
-            if(vehicle!=null){
+            if(vehicle==null){
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found!");
             }
             Contract contract = new Contract();
@@ -107,11 +105,62 @@ public class RenterController {
             contract.setEndDate(contractDTO.getStartDate());
             long daysBetween = ChronoUnit.DAYS.between((Temporal) contractDTO.getStartDate(), (Temporal) contractDTO.getStartDate());
             contract.setTotal(daysBetween*vehicle.getVehicleCommerce().getPricePerDay());
-            DataPool contractualStatus = dataPoolService.getDataPoolById(4l);
+            //Ids are hard coded corresponding to database since they won't change.Id 17 is enum_name "Waiting"
+            DataPool contractualStatus = dataPoolService.getDataPoolById(17l);
             contract.setContractualStatus(contractualStatus);
             contractService.save(contract);
 
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, renter, RECORD_CREATED);
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+
+        }
+    }
+    @GetMapping("/{id}/active-contract-requests/")
+    public ResponseEntity<Object> getActiveContractRequests(@PathVariable Long id)  {
+        try {
+            Renter renter = renterService.getRenterById(id);
+            if(renter==null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ENTITY_NOT_FOUND);
+            }
+            List<Contract> contracts = renterService.contractRequests(id,17l);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, contracts, RECORD_CREATED);
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+
+        }
+    }
+    @GetMapping("/{id}/contract-history/")
+    public ResponseEntity<Object> getContractsHistory(@PathVariable Long id)  {
+        try {
+            Renter renter = renterService.getRenterById(id);
+            if(renter==null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ENTITY_NOT_FOUND);
+            }
+            List<Contract> contracts = renter.getContractSigned();
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, contracts, RECORD_CREATED);
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+
+        }
+    }
+    @GetMapping("/{id}/active-contract-requests/{contractId}/cancel-contract")
+    public ResponseEntity<Object> getActiveContractRequest(@PathVariable Long id,@PathVariable Long contractId)  {
+        try {
+            Renter renter = renterService.getRenterById(id);
+            if(renter==null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter not found!");
+            }
+            Contract contract = contractService.getContractById(contractId);
+            if(contract==null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract not found!");
+            }
+            contract.setContractualStatus(dataPoolService.getDataPoolById(18l));
+            contractService.update(contract,contractId);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, "Contract cancelled successfully!");
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());

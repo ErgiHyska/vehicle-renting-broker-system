@@ -1,0 +1,21 @@
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'LenderStatus', 'unconfirmedLender');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'LenderStatus', 'VerifiedLender');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'LenderStatus', 'BannedLender');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'LenderStatus', 'BanAppealingLender');
+
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'RenterStatus', 'unconfirmedRenter');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'RenterStatus', 'VerifiedRenter');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'RenterStatus', 'BannedRenter');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'RenterStatus', 'BanAppealingRenter');
+
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'VehicleStatus', 'unconfirmedVehicle');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'VehicleStatus', 'VerifiedVehicle');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'VehicleStatus', 'BannedVehicle');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'VehicleStatus', 'BanAppealingVehicle');
+
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'ContractualStatus', 'Accepted');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'ContractualStatus', 'Rejected');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'ContractualStatus', 'Active');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'ContractualStatus', 'Finished');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'ContractualStatus', 'Waiting');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'ContractualStatus', 'Canceled');

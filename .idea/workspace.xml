@@ -5,28 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6730ecd-9b7b-4bf6-81fe-06dbbbbd8425" name="Changes" comment="Updated">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/dto/VehicleCommercialDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/VehicleCommerceService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/data-pool-inserts.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/LenderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/LenderController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/RenterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/RenterController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/dto/StatusDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/dto/StatusDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/LenderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/LenderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Contract.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Contract.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/DataPool.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/DataPool.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/VehicleCommerce.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/VehicleCommerce.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/repository/LenderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/repository/LenderRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application-local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application-local.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/RenterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/RenterService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/repository/RenterRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/repository/RenterRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/api/controller/LenderController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/api/controller/LenderController.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/api/controller/RenterController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/api/controller/RenterController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/LenderService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/LenderService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/Contract.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/Contract.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/DataPool.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/DataPool.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QContract.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QContract.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QDataPool.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QDataPool.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/repository/LenderRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/repository/LenderRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QContract.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QContract.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QDataPool.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QDataPool.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,34 +65,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;false&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ergih/Desktop/vehicool-temp&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "false",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/ergih/Desktop/vehicool-temp/src/main/resources",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ergih\Desktop\vehicool-temp\src\main\resources" />
       <recent name="C:\Users\ergih\Desktop\New folder (3)\src\main\java\com\vehicool\vehicool\business\querydsl" />
       <recent name="C:\Users\ergih\Desktop\New folder (3)\src\main\java\com\vehicool\vehicool\business\service" />
       <recent name="C:\Users\ergih\Desktop\New folder (3)\src\main\java\com\vehicool\vehicool\persistence\repository" />
@@ -162,7 +151,7 @@
       <workItem from="1715932367781" duration="381000" />
       <workItem from="1715935242885" duration="37000" />
       <workItem from="1715965924972" duration="2713000" />
-      <workItem from="1716029786156" duration="11009000" />
+      <workItem from="1716029786156" duration="13785000" />
     </task>
     <task id="LOCAL-00001" summary="Test">
       <option name="closed" value="true" />
@@ -188,7 +177,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716038658407</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Updated">
+      <option name="closed" value="true" />
+      <created>1716043725257</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1716043725257</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
