@@ -1,9 +1,6 @@
 package com.vehicool.vehicool.api.controller;
 
-import com.vehicool.vehicool.api.dto.LenderDTO;
-import com.vehicool.vehicool.api.dto.StatusDTO;
-import com.vehicool.vehicool.api.dto.VehicleCommercialDTO;
-import com.vehicool.vehicool.api.dto.VehicleDTO;
+import com.vehicool.vehicool.api.dto.*;
 import com.vehicool.vehicool.business.service.*;
 import com.vehicool.vehicool.persistence.entity.*;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
@@ -34,6 +31,7 @@ public class LenderController {
     private final VehicleService vehicleService;
     private final VehicleCommerceService vehicleCommerceService;
     private final ContractService contractService;
+    private final RenterReviewService renterReviewService;
 
     @PostMapping("/create")
     public ResponseEntity<Object> create(@RequestBody @Valid LenderDTO lenderDTO) {
@@ -298,6 +296,29 @@ public class LenderController {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract not found!");
             }
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, RECORDS_RECEIVED);
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+
+        }
+    }
+    @PostMapping("/{lenderId}/contract-history/{contractId}/review-renter")
+    public ResponseEntity<Object> reviewRenter(@PathVariable Long lenderId, @PathVariable Long contractId, @RequestBody RenterReviewDTO renterReviewDTO)  {
+        try {
+            Lender lender = lenderService.getLenderById(lenderId);
+            if(lender==null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found!");
+            }
+            Contract contract = contractService.getContractById(contractId);
+            if(contract==null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract not found!");
+            }
+            Renter renter = contract.getRenter();
+            RenterReview renterReview = modelMapper.map(renterReviewDTO,RenterReview.class);
+            renterReview.setRenter(renter);
+            renterReview.setLender(lender);
+            renterReviewService.save(renterReview);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, renterReview, RECORDS_RECEIVED);
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
