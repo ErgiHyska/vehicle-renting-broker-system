@@ -22,4 +22,5 @@ public class VehicleFilter {
     private String status;
     private Boolean available;
     private Long productionYear;
+    private Long locationId;
 }

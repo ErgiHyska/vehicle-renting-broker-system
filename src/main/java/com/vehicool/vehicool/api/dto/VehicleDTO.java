@@ -37,4 +37,7 @@ public class VehicleDTO {
     @NotNull(message = "Production Year is required!")
     private Long productionYear;
 
+    @NotNull(message = "City is required!")
+    private Long cityId;
+
 }

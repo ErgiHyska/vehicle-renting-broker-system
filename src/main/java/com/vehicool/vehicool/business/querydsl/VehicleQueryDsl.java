@@ -48,6 +48,9 @@ public class VehicleQueryDsl implements QueryDsl<VehicleFilter> {
         if (filter.getProductionYear()!=null) {
             query.and(qVehicle.productionYear.eq(filter.getProductionYear()));
         }
+        if (filter.getLocationId()!=null) {
+            query.and(qVehicle.location.id.eq(filter.getLocationId()));
+        }
 
         return query;
     }

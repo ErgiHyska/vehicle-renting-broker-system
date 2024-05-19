@@ -47,6 +47,10 @@ public class Vehicle {
     @JoinColumn(name = "status")
     private DataPool status;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "location")
+    private DataPool location;
+
     @Column(name="available",nullable = false)
     private Boolean available;
 

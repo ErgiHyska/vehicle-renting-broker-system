@@ -29,4 +29,12 @@ public class DataPool {
     @OneToMany(mappedBy = "contractualStatus", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Contract> contractList;
+
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Vehicle> statusVehicles;
+
+    @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Vehicle> locationVehicles;
 }

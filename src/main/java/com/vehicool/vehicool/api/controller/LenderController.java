@@ -168,6 +168,9 @@ public class LenderController {
             if (status == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Status not found !");
             }
+            if (!lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender is not verified");
+            }
             contract.setContractualStatus(status);
             contractService.update(contract, contractId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, "Contract status updated !");
@@ -229,8 +232,16 @@ public class LenderController {
             if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
+            if (!lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender is not verified !");
+            }
+            DataPool locaton = dataPoolService.getDataPoolById(vehicleDTO.getCityId());
+            if (locaton == null && locaton.getEnumName().matches("location")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Location not found/exists !");
+            }
             Vehicle vehicle = modelMapper.map(vehicleDTO, Vehicle.class);
             vehicle.setLender(lender);
+            vehicle.setLocation(locaton);
             vehicle.setAvailable(false);
             vehicle.setStatus(dataPoolService.getDataPoolById(1l));
             vehicleService.save(vehicle);

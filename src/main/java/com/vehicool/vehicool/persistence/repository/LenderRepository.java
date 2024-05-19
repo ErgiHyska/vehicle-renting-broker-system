@@ -13,4 +13,7 @@ import java.util.List;
 public interface LenderRepository extends JpaRepository<Lender,Long> , QuerydslPredicateExecutor<Lender> {
     @Query("SELECT con from Contract con where con.lender.id = :id and con.lender.status.id = :statusId")
     List<Contract> contractRequests(Long id, Long statusId);
+
+    @Query("SELECT avg(lr.rating) from LenderReview lr  where lr.lender.id =:id")
+    float lenderRatingAvergage(Long id);
 }

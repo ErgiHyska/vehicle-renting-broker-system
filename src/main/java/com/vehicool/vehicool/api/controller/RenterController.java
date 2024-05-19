@@ -101,6 +101,15 @@ public class RenterController {
             if (vehicle == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found!");
             }
+            if (!vehicle.getStatus().getEnumLabel().matches("VerifiedVehicle")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not verified yet!");
+            }
+            if (!vehicle.getAvailable()) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not available for renting !");
+            }
+            if (!renter.getStatus().getEnumLabel().matches("VerifiedRenter")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter is not verified");
+            }
             Contract contract = new Contract();
             contract.setRenter(renter);
             contract.setLender(vehicle.getLender());

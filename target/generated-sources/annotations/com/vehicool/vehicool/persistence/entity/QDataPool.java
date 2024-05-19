@@ -28,6 +28,10 @@ public class QDataPool extends EntityPathBase<DataPool> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final ListPath<Vehicle, QVehicle> locationVehicles = this.<Vehicle, QVehicle>createList("locationVehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
+
+    public final ListPath<Vehicle, QVehicle> statusVehicles = this.<Vehicle, QVehicle>createList("statusVehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
+
     public final ListPath<TranslatedDataPool, QTranslatedDataPool> translatedDataPoolList = this.<TranslatedDataPool, QTranslatedDataPool>createList("translatedDataPoolList", TranslatedDataPool.class, QTranslatedDataPool.class, PathInits.DIRECT2);
 
     public QDataPool(String variable) {

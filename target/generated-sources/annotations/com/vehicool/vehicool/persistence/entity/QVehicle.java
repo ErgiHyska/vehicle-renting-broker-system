@@ -40,6 +40,8 @@ public class QVehicle extends EntityPathBase<Vehicle> {
 
     public final QLender lender;
 
+    public final QDataPool location;
+
     public final StringPath model = createString("model");
 
     public final NumberPath<Long> noOfSeats = createNumber("noOfSeats", Long.class);
@@ -77,6 +79,7 @@ public class QVehicle extends EntityPathBase<Vehicle> {
     public QVehicle(Class<? extends Vehicle> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.lender = inits.isInitialized("lender") ? new QLender(forProperty("lender"), inits.get("lender")) : null;
+        this.location = inits.isInitialized("location") ? new QDataPool(forProperty("location")) : null;
         this.status = inits.isInitialized("status") ? new QDataPool(forProperty("status")) : null;
         this.vehicleCommerce = inits.isInitialized("vehicleCommerce") ? new QVehicleCommerce(forProperty("vehicleCommerce"), inits.get("vehicleCommerce")) : null;
     }
