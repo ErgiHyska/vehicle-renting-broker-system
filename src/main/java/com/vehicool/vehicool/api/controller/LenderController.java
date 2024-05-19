@@ -10,11 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.vehicool.vehicool.util.constants.Messages.*;
@@ -96,7 +99,7 @@ public class LenderController {
 
     @GetMapping("/{lenderId}/lender-vehicles/{vehicleId}")
     @Transactional
-    public ResponseEntity<Object> changeVehicleCommercialDetails(@RequestBody VehicleCommercialDTO vehicleCommercialDTO, @PathVariable Long lenderId, @PathVariable Long vehicleId) {
+    public ResponseEntity<Object> changeVehicleCommercialDetails(@PathVariable Long lenderId,@PathVariable Long vehicleId,@RequestBody VehicleCommercialDTO vehicleCommercialDTO) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
             if(lender==null){
@@ -254,13 +257,13 @@ public class LenderController {
 
     @PutMapping("/{lenderId}/lender-vehicles/{vehicleId}/update-vehicle")
     @Transactional
-    public ResponseEntity<Object> updateVehicle(@PathVariable Long id,@PathVariable Long vehicleId, @RequestBody @Valid VehicleDTO vehicleDTO) {
+    public ResponseEntity<Object> updateVehicle(@PathVariable Long lenderId,@PathVariable Long vehicleId, @RequestBody @Valid VehicleDTO vehicleDTO) {
         try {
-            Lender lender = lenderService.getLenderById(id);
+            Lender lender = lenderService.getLenderById(lenderId);
             if(lender==null){
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
-            Vehicle vehicle = vehicleService.getVehicleById(id);
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
             if(vehicle==null){
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found !");
             }
@@ -328,5 +331,10 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
 
         }
+    }
+    @PostMapping(value = "/{lenderId}/upload-confidential-data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> uploadImage(@PathVariable Long lenderId,@RequestParam("image")List<MultipartFile> files) throws IOException {
+        String uploadImage = lenderService.uploadLenderConfidentialFile(files,lenderId);
+        return ResponseMapper.map(SUCCESS, HttpStatus.OK, uploadImage, RECORDS_RECEIVED);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface StorageRepository extends JpaRepository<ConfidentialFile, Long> {
+public interface DatabaseStorageRepository extends JpaRepository<ConfidentialFile, Long> {
 
 
     Optional<ConfidentialFile> findByName(String fileName);

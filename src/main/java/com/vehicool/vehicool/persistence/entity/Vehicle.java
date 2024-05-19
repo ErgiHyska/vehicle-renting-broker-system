@@ -1,5 +1,6 @@
 package com.vehicool.vehicool.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,6 +55,7 @@ public class Vehicle {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "lender_id")
+    @JsonIgnore
     private Lender lender;
 
     @OneToMany(mappedBy ="vehicle")

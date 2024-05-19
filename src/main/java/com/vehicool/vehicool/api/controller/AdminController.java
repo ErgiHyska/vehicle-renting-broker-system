@@ -8,10 +8,7 @@ import com.vehicool.vehicool.business.service.DataPoolService;
 import com.vehicool.vehicool.business.service.LenderService;
 import com.vehicool.vehicool.business.service.RenterService;
 import com.vehicool.vehicool.business.service.VehicleService;
-import com.vehicool.vehicool.persistence.entity.DataPool;
-import com.vehicool.vehicool.persistence.entity.Lender;
-import com.vehicool.vehicool.persistence.entity.Renter;
-import com.vehicool.vehicool.persistence.entity.Vehicle;
+import com.vehicool.vehicool.persistence.entity.*;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -23,12 +20,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PropertyReferenceException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
@@ -106,6 +113,63 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+@GetMapping("/list-all-lenders/{id}/confidential-files")
+@Transactional
+public ResponseEntity<Object> getLenderConfidentialFiles(@PathVariable Long id) {
+    try {
+        Lender lender = lenderService.getLenderById(id);
+        if (lender == null) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+        }
+
+        List<byte[]> confidentialFiles = lenderService.getLenderConfidentialFiles(id);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+
+        for (int i = 0; i < confidentialFiles.size(); i++) {
+            ZipEntry entry = new ZipEntry("file" + (i + 1) + ".png");
+            entry.setSize(confidentialFiles.get(i).length);
+            zos.putNextEntry(entry);
+            zos.write(confidentialFiles.get(i));
+            zos.closeEntry();
+        }
+        zos.close();
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=lender_files.zip").body(baos.toByteArray());
+    } catch (Exception e) {
+        return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+    }
+}
+    @GetMapping("/list-all-renters/{id}/confidential-files")
+    @Transactional
+    public ResponseEntity<Object> getRenterConfidentialFiles(@PathVariable Long id) {
+        try {
+            Renter renter = renterService.getRenterById(id);
+            if (renter == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter not found !");
+            }
+
+            List<byte[]> confidentialFiles = renterService.getRenterConfidentialFiles(id);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(baos);
+
+            for (int i = 0; i < confidentialFiles.size(); i++) {
+                ZipEntry entry = new ZipEntry("file" + (i + 1) + ".png");
+                entry.setSize(confidentialFiles.get(i).length);
+                zos.putNextEntry(entry);
+                zos.write(confidentialFiles.get(i));
+                zos.closeEntry();
+            }
+            zos.close();
+
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=renter_files.zip").body(baos.toByteArray());
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
+
+
+
 
     @PostMapping("/list-all-lenders/{id}/set-status")
     @Transactional

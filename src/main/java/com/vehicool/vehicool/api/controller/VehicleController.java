@@ -73,10 +73,10 @@ public class VehicleController {
 
         }
     }
-    @GetMapping("/{id}/images")
-    public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable Long id) throws IOException {
-        List<byte[]> images = vehicleService.downloadVehiclePicturesById(id);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("image/png")).body(images.get(0));
-    }
+//    @GetMapping("/{id}/images")
+//    public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable Long id) throws IOException {
+//        List<byte[]> images = vehicleService.downloadVehiclePicturesById(id);
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .contentType(MediaType.valueOf("image/png")).body(images.get(0));
+//    }
 }
