@@ -259,8 +259,8 @@ public class RenterController {
         }
     }
     @PostMapping(value = "/{renterId}/upload-confidential-data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadImage(@PathVariable Long renterId,@RequestParam("image")List<MultipartFile> file) throws IOException {
-        String uploadImage = renterService.uploadRenterConfidentialFile(file,renterId);
+    public ResponseEntity<?> uploadImage(@PathVariable Long renterId,@RequestParam("image")List<MultipartFile> files) throws IOException {
+        String uploadImage = renterService.uploadRenterConfidentialFile(files,renterId);
         return ResponseMapper.map(SUCCESS, HttpStatus.OK, uploadImage, RECORDS_RECEIVED);
     }
 }

@@ -35,6 +35,7 @@ public class LenderController {
     private final VehicleCommerceService vehicleCommerceService;
     private final ContractService contractService;
     private final RenterReviewService renterReviewService;
+    private final StorageService storageService;
 
     @PostMapping("/create")
     public ResponseEntity<Object> create(@RequestBody @Valid LenderDTO lenderDTO) {
@@ -42,24 +43,25 @@ public class LenderController {
             Lender lender = modelMapper.map(lenderDTO, Lender.class);
             lender.setStatus(dataPoolService.getDataPoolById(1l));
             lenderService.save(lender);
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK,lender,RECORD_CREATED);
-        }catch (Exception e){
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, lender, RECORD_CREATED);
+        } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
 
         }
     }
+
     @PutMapping("/{lenderId}/update")
-    public ResponseEntity<Object> update(@RequestBody @Valid LenderDTO lenderDTO,@PathVariable Long lenderId) {
+    public ResponseEntity<Object> update(@RequestBody @Valid LenderDTO lenderDTO, @PathVariable Long lenderId) {
         try {
-            Lender lender =lenderService.getLenderById(lenderId);
-            if(lender==null){
+            Lender lender = lenderService.getLenderById(lenderId);
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             lender = modelMapper.map(lenderDTO, Lender.class);
-            lenderService.update(lender,lenderId);
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK,lender,RECORD_CREATED);
-        }catch (Exception e){
+            lenderService.update(lender, lenderId);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, lender, RECORD_CREATED);
+        } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
 
@@ -67,10 +69,10 @@ public class LenderController {
     }
 
     @GetMapping("/{lenderId}")
-    public ResponseEntity<Object> get(@PathVariable Long lenderId)  {
+    public ResponseEntity<Object> get(@PathVariable Long lenderId) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, lender, RECORD_CREATED);
@@ -85,7 +87,7 @@ public class LenderController {
     public ResponseEntity<Object> delete(@PathVariable Long lenderId) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             lenderService.delete(lenderId);
@@ -99,27 +101,27 @@ public class LenderController {
 
     @GetMapping("/{lenderId}/lender-vehicles/{vehicleId}")
     @Transactional
-    public ResponseEntity<Object> changeVehicleCommercialDetails(@PathVariable Long lenderId,@PathVariable Long vehicleId,@RequestBody VehicleCommercialDTO vehicleCommercialDTO) {
+    public ResponseEntity<Object> changeVehicleCommercialDetails(@PathVariable Long lenderId, @PathVariable Long vehicleId, @RequestBody VehicleCommercialDTO vehicleCommercialDTO) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
-            if(vehicle==null){
+            if (vehicle == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found !");
             }
-            if(vehicle.getVehicleCommerce().equals(null)){
-                VehicleCommerce vehicleCommerce = modelMapper.map(vehicleCommercialDTO,VehicleCommerce.class);
+            if (vehicle.getVehicleCommerce().equals(null)) {
+                VehicleCommerce vehicleCommerce = modelMapper.map(vehicleCommercialDTO, VehicleCommerce.class);
                 vehicleCommerce.setVehicle(vehicle);
                 vehicleCommerceService.save(vehicleCommerce);
-            }else{
+            } else {
                 VehicleCommerce vehicleCommerce = vehicle.getVehicleCommerce();
                 vehicleCommerce.setVehicle(vehicle);
                 vehicleCommerce.setPricePerDay(vehicleCommerce.getPricePerDay());
                 vehicleCommerce.setDateAvailable(vehicleCommercialDTO.getDateAvailable());
                 vehicleCommerce.setMaxDateAvailable(vehicleCommercialDTO.getMaxDateAvailable());
-                vehicleCommerceService.update(vehicleCommerce,vehicleCommerce.getId());
+                vehicleCommerceService.update(vehicleCommerce, vehicleCommerce.getId());
             }
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, lender.getVehicles(), RECORDS_RECEIVED);
         } catch (PropertyReferenceException e) {
@@ -130,15 +132,16 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+
     @GetMapping("/{lenderId}/active-contract-requests")
     @Transactional
     public ResponseEntity<Object> listContractRequests(@PathVariable Long lenderId) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
-            List<Contract> contracts = lenderService.contractRequests(lenderId,17l);
+            List<Contract> contracts = lenderService.contractRequests(lenderId, 17l);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contracts, RECORDS_RECEIVED);
         } catch (PropertyReferenceException e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -148,24 +151,25 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+
     @PostMapping("/{lenderId}/active-contract-requests/{contractId}/proceed")
     @Transactional
-    public ResponseEntity<Object> proceedContractRequests(@PathVariable Long lenderId,@PathVariable Long contractId,@RequestBody StatusDTO statusDTO) {
+    public ResponseEntity<Object> proceedContractRequests(@PathVariable Long lenderId, @PathVariable Long contractId, @RequestBody StatusDTO statusDTO) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             Contract contract = contractService.getContractById(contractId);
-            if(contract==null){
+            if (contract == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract request not found !");
             }
-            DataPool status=dataPoolService.getDataPoolById(statusDTO.getStatusId());
-            if(status==null){
+            DataPool status = dataPoolService.getDataPoolById(statusDTO.getStatusId());
+            if (status == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Status not found !");
             }
             contract.setContractualStatus(status);
-            contractService.update(contract,contractId);
+            contractService.update(contract, contractId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, "Contract status updated !");
         } catch (PropertyReferenceException e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -175,19 +179,20 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+
     @GetMapping("/{lenderId}/active-contract-requests/{contractId}")
     @Transactional
-    public ResponseEntity<Object> viewContractRequest(@PathVariable Long lenderId,@PathVariable Long contractId,@RequestBody StatusDTO statusDTO) {
+    public ResponseEntity<Object> viewContractRequest(@PathVariable Long lenderId, @PathVariable Long contractId, @RequestBody StatusDTO statusDTO) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             Contract contract = contractService.getContractById(contractId);
-            if(contract==null){
+            if (contract == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract request not found !");
             }
-            contract=contractService.getContractById(contractId);
+            contract = contractService.getContractById(contractId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, RECORDS_RECEIVED);
         } catch (PropertyReferenceException e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -197,12 +202,13 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+
     @GetMapping("/{lenderId}/lender-vehicles")
     @Transactional
     public ResponseEntity<Object> listVehicles(@PathVariable Long lenderId) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, lender.getVehicles(), RECORDS_RECEIVED);
@@ -214,12 +220,13 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+
     @PostMapping("/{lenderId}/post-a-vehicle")
     @Transactional
-    public ResponseEntity<Object> createVehicle(@PathVariable Long lenderId,@RequestBody @Valid VehicleDTO vehicleDTO) {
+    public ResponseEntity<Object> createVehicle(@PathVariable Long lenderId, @RequestBody @Valid VehicleDTO vehicleDTO) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             Vehicle vehicle = modelMapper.map(vehicleDTO, Vehicle.class);
@@ -234,16 +241,17 @@ public class LenderController {
 
         }
     }
+
     @DeleteMapping("/{lenderId}/lender-vehicles/{vehicleId}/delete-vehicle")
     @Transactional
-    public ResponseEntity<Object> deleteVehicle(@PathVariable Long lenderId,@PathVariable Long vehicleId) {
+    public ResponseEntity<Object> deleteVehicle(@PathVariable Long lenderId, @PathVariable Long vehicleId) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
-            if(vehicle!=null){
+            if (vehicle != null) {
                 vehicleService.delete(vehicleId);
             }
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, "Vehicle deleted successfuly !");
@@ -257,18 +265,18 @@ public class LenderController {
 
     @PutMapping("/{lenderId}/lender-vehicles/{vehicleId}/update-vehicle")
     @Transactional
-    public ResponseEntity<Object> updateVehicle(@PathVariable Long lenderId,@PathVariable Long vehicleId, @RequestBody @Valid VehicleDTO vehicleDTO) {
+    public ResponseEntity<Object> updateVehicle(@PathVariable Long lenderId, @PathVariable Long vehicleId, @RequestBody @Valid VehicleDTO vehicleDTO) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
-            if(vehicle==null){
+            if (vehicle == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found !");
             }
             modelMapper.map(vehicleDTO, vehicle);
-            vehicleService.update(vehicle,vehicleId);
+            vehicleService.update(vehicle, vehicleId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, "Vehicle updated successfuly !");
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -276,11 +284,12 @@ public class LenderController {
 
         }
     }
+
     @GetMapping("/{lenderId}/contract-history")
-    public ResponseEntity<Object> getContractsHistory(@PathVariable Long lenderId)  {
+    public ResponseEntity<Object> getContractsHistory(@PathVariable Long lenderId) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ENTITY_NOT_FOUND);
             }
             List<Contract> contracts = lender.getContractSigned();
@@ -291,15 +300,16 @@ public class LenderController {
 
         }
     }
+
     @GetMapping("/{lenderId}/contract-history/{contractId}")
-    public ResponseEntity<Object> getContract(@PathVariable Long lenderId,@PathVariable Long contractId)  {
+    public ResponseEntity<Object> getContract(@PathVariable Long lenderId, @PathVariable Long contractId) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found!");
             }
             Contract contract = contractService.getContractById(contractId);
-            if(contract==null){
+            if (contract == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract not found!");
             }
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, RECORDS_RECEIVED);
@@ -309,19 +319,20 @@ public class LenderController {
 
         }
     }
+
     @PostMapping("/{lenderId}/contract-history/{contractId}/review-renter")
-    public ResponseEntity<Object> reviewRenter(@PathVariable Long lenderId, @PathVariable Long contractId, @RequestBody RenterReviewDTO renterReviewDTO)  {
+    public ResponseEntity<Object> reviewRenter(@PathVariable Long lenderId, @PathVariable Long contractId, @RequestBody RenterReviewDTO renterReviewDTO) {
         try {
             Lender lender = lenderService.getLenderById(lenderId);
-            if(lender==null){
+            if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found!");
             }
             Contract contract = contractService.getContractById(contractId);
-            if(contract==null){
+            if (contract == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract not found!");
             }
             Renter renter = contract.getRenter();
-            RenterReview renterReview = modelMapper.map(renterReviewDTO,RenterReview.class);
+            RenterReview renterReview = modelMapper.map(renterReviewDTO, RenterReview.class);
             renterReview.setRenter(renter);
             renterReview.setLender(lender);
             renterReviewService.save(renterReview);
@@ -332,9 +343,75 @@ public class LenderController {
 
         }
     }
-    @PostMapping(value = "/{lenderId}/upload-confidential-data",consumes = MediaType.MULTIPART_FORM_DATA_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadImage(@PathVariable Long lenderId,@RequestParam("image")List<MultipartFile> files) throws IOException {
-        String uploadImage = lenderService.uploadLenderConfidentialFile(files,lenderId);
+
+    @PostMapping(value = "/{lenderId}/upload-confidential-data", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> uploadImage(@PathVariable Long lenderId, @RequestParam("image") List<MultipartFile> files) throws IOException {
+        String uploadImage = lenderService.uploadLenderConfidentialFile(files, lenderId);
         return ResponseMapper.map(SUCCESS, HttpStatus.OK, uploadImage, RECORDS_RECEIVED);
     }
+
+    @PostMapping(value = "/{lenderId}/lender-vehicles/{vehicleId}/upload-vehicle-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<Object> uploadVehicleImages(@RequestParam("image") List<MultipartFile> files, @PathVariable Long lenderId, @PathVariable Long vehicleId) {
+        try {
+            Lender lender = lenderService.getLenderById(lenderId);
+            if (lender == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            }
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            if (vehicle == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found !");
+            }
+            String result = vehicleService.uploadVehicleImages(files, vehicleId);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, result, "Vehicle pictures uploaded successfuly !");
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+
+
+        }
+    }
+
+    @GetMapping(value = "/{lenderId}/lender-vehicles/{vehicleId}/imagesIds")
+    @Transactional
+    public ResponseEntity<Object> vehicleImagesIds(@PathVariable Long lenderId, @PathVariable Long vehicleId) {
+        try {
+            Lender lender = lenderService.getLenderById(lenderId);
+            if (lender == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            }
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            if (vehicle == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found !");
+            }
+            List<Long> imgIds = vehicle.getImages().stream().map(img -> img.getId()).toList();
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, imgIds, "Ids retrieved!");
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
+    @DeleteMapping(value = "/{lenderId}/lender-vehicles/{vehicleId}/deleteImage/{imageId}")
+    @Transactional
+    public ResponseEntity<Object> vehicleImagesIds(@PathVariable Long lenderId, @PathVariable Long vehicleId,@PathVariable Long imageId) {
+        try {
+            Lender lender = lenderService.getLenderById(lenderId);
+            if (lender == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            }
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            if (vehicle == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found !");
+            }
+            FileData fileData = storageService.getStorageFileById(imageId);
+            if (fileData != null) {
+                storageService.deleteStorageFile(imageId);
+            }
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, "Image deleted successfully !");
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
+
 }

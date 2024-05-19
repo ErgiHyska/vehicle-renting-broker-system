@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PropertyReferenceException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -79,4 +80,16 @@ public class VehicleController {
 //        return ResponseEntity.status(HttpStatus.OK)
 //                .contentType(MediaType.valueOf("image/png")).body(images.get(0));
 //    }
+@GetMapping("/{vehicleId}/images")
+public ResponseEntity<List<byte[]>> getVehicleImages(@PathVariable Long vehicleId) {
+    try {
+        List<byte[]> images = vehicleService.downloadImageFromFileSystem(vehicleId);
+        if (images == null || images.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(images, new HttpHeaders(), HttpStatus.OK);
+    } catch (IOException e) {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
 }

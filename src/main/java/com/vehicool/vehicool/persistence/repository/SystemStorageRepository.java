@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SystemDataRepository extends JpaRepository<FileData,Integer> {
+public interface SystemStorageRepository extends JpaRepository<FileData,Long> {
     Optional<FileData> findByName(String fileName);
     List<FileData> findAllByVehicleId(Long id);
 }

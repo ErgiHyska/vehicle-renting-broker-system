@@ -5,6 +5,7 @@ import com.vehicool.vehicool.business.querydsl.VehicleFilter;
 import com.vehicool.vehicool.business.querydsl.VehicleQueryDsl;
 import com.vehicool.vehicool.persistence.entity.FileData;
 import com.vehicool.vehicool.persistence.entity.Vehicle;
+import com.vehicool.vehicool.persistence.repository.SystemStorageRepository;
 import com.vehicool.vehicool.persistence.repository.VehicleRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,13 +15,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class VehicleService {
     private final VehicleRepository vehicleRepository;
+    private final SystemStorageRepository systemStorageRepository;
     private final VehicleQueryDsl vehicleQueryDsl;
-    private final String VEHICLE_IMAGES_PATH = "C:\\Users\\ergih\\Desktop\\vehicleImages\\";
+    private final String FOLDER_PATH = "C:\\Users\\ergih\\Desktop\\fileStorage\\";
 
     public Vehicle getVehicleById(Long id) {
         return vehicleRepository.findById(id).orElse(null);
@@ -43,4 +48,40 @@ public class VehicleService {
         Predicate filter = vehicleQueryDsl.filter(vehicleFilter);
         return vehicleRepository.findAll(filter, pageRequest);
     }
+
+    public String uploadVehicleImages(List<MultipartFile> files, Long vehicleId) throws IOException {
+        Vehicle vehicle = getVehicleById(vehicleId);
+        if (vehicle == null) {
+            return "Vehicle not found for the given id !";
+        }
+        List<FileData> fileDataList = new ArrayList<>();
+        for (MultipartFile file : files) {
+            String filePath = FOLDER_PATH + file.getOriginalFilename();
+            fileDataList.add(FileData.builder().name(file.getOriginalFilename()).vehicle(vehicle).type(file.getContentType()).filePath(filePath).build());
+            file.transferTo(new File(filePath));
+        }
+        systemStorageRepository.saveAll(fileDataList);
+
+
+        if (!fileDataList.isEmpty()) {
+            return "file uploaded successfully !";
+        }
+        return "Upload error!";
+    }
+
+    public List<byte[]> downloadImageFromFileSystem(Long vehicleId) throws IOException {
+        Vehicle vehicle = getVehicleById(vehicleId);
+        if (vehicle == null) {
+            return null;
+        }
+        List<FileData> filesData = vehicle.getImages();
+        List<byte[]> images = new ArrayList<>();
+        for (FileData fileData : filesData) {
+            String filePath = fileData.getFilePath();
+            byte[] image = Files.readAllBytes(new File(filePath).toPath());
+        }
+        return images;
+    }
+
+
 }

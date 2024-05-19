@@ -4,12 +4,11 @@ package com.vehicool.vehicool.business.service;
 import com.vehicool.vehicool.persistence.entity.ConfidentialFile;
 import com.vehicool.vehicool.persistence.entity.FileData;
 import com.vehicool.vehicool.persistence.repository.DatabaseStorageRepository;
-import com.vehicool.vehicool.persistence.repository.SystemDataRepository;
+import com.vehicool.vehicool.persistence.repository.SystemStorageRepository;
 import com.vehicool.vehicool.util.fileconfigs.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +21,24 @@ public class StorageService {
     private DatabaseStorageRepository databaseStorageRepository;
 
     @Autowired
-    private SystemDataRepository systemDataRepository;
+    private SystemStorageRepository systemStorageRepository;
+
+    public FileData getStorageFileById(Long id) {
+        return systemStorageRepository.findById(id).orElse(null);
+    }
+
+    public FileData saveStorageFile(FileData fileData) {
+        return systemStorageRepository.save(fileData);
+    }
+
+    public void deleteStorageFile(Long id){
+        systemStorageRepository.deleteById(id);
+    }
+
+    public FileData updateStorageFile(FileData fileData,Long Id){
+        fileData.setId(Id);
+        return systemStorageRepository.saveAndFlush(fileData);
+    }
 
     private final String FOLDER_PATH="src/main/resources/vehiclesImages/";
 
@@ -49,7 +65,7 @@ public class StorageService {
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {
         String filePath=FOLDER_PATH+file.getOriginalFilename();
 
-        FileData fileData=systemDataRepository.save(FileData.builder()
+        FileData fileData=systemStorageRepository.save(FileData.builder()
                 .name(file.getOriginalFilename())
                 .type(file.getContentType())
                 .filePath(filePath).build());
@@ -63,11 +79,10 @@ public class StorageService {
         return null;
     }
 
-    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
-        Optional<FileData> fileData = systemDataRepository.findByName(fileName);
+    public byte[] downloadImageFromFileSystem(Long id) throws IOException {
+        Optional<FileData> fileData = systemStorageRepository.findById(id);
         String filePath=fileData.get().getFilePath();
-        byte[] images = Files.readAllBytes(new File(filePath).toPath());
-        return images;
+        return Files.readAllBytes(new File(filePath).toPath());
     }
 
 
