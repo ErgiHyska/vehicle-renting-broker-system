@@ -16,14 +16,12 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @Column(name="vin",nullable = false)
     private String vin;
 
     @Column(name="color",nullable = false)
     private String color;
-
-    @Column(name="vehicle_type",nullable = false)
-    private String type;
 
     @Column(name="brand",nullable = false)
     private String Brand;
@@ -76,4 +74,8 @@ public class Vehicle {
     @ManyToOne(optional = false)
     @JoinColumn(name = "engine_type")
     private DataPool engineType;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "vehicle_type")
+    private DataPool vehicleType;
 }

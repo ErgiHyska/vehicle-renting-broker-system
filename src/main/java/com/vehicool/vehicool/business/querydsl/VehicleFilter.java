@@ -15,7 +15,8 @@ import java.util.Date;
 public class VehicleFilter {
 
     private Long transmissionTypeId;
-    private Long engineType;
+    private Long vehicleTypeId;
+    private Long engineTypeId;
     private Long locationId;
     private Double minPrice;
     private Double maxPrice;

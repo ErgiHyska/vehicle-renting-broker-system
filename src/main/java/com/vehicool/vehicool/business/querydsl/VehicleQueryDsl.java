@@ -22,8 +22,11 @@ public class VehicleQueryDsl implements QueryDsl<VehicleFilter> {
         if (filter.getTransmissionTypeId()!=null) {
             query.and(qVehicle.transmissionType.id.eq(filter.getTransmissionTypeId()));
         }
-        if (filter.getEngineType()!=null) {
-            query.and(qVehicle.engineType.id.eq(filter.getEngineType()));
+        if (filter.getEngineTypeId()!=null) {
+            query.and(qVehicle.engineType.id.eq(filter.getEngineTypeId()));
+        }
+        if (filter.getVehicleTypeId()!=null) {
+            query.and(qVehicle.engineType.id.eq(filter.getVehicleTypeId()));
         }
         if (filter.getLocationId()!=null) {
             query.and(qVehicle.location.id.eq(filter.getLocationId()));

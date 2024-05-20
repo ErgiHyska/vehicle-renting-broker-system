@@ -45,4 +45,8 @@ public class DataPool {
     @OneToMany(mappedBy = "transmissionType", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Vehicle> transmissionVehicles;
+
+    @OneToMany(mappedBy = "vehicleType", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Vehicle> vehicleTypeVehicles;
 }
