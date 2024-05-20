@@ -171,20 +171,20 @@ public ResponseEntity<Object> getLenderConfidentialFiles(@PathVariable Long id) 
 
 
 
-    @PostMapping("/list-all-lenders/{id}/set-status")
+    @PostMapping("/list-all-lenders/{lenderId}/set-status")
     @Transactional
-    public ResponseEntity<Object> setLenderStatus(@RequestBody StatusDTO statusDTO, @PathVariable Long id) {
+    public ResponseEntity<Object> setLenderStatus(@RequestBody StatusDTO statusDTO, @PathVariable Long lenderId) {
         try {
-            Lender lender = lenderService.getLenderById(id);
+            Lender lender = lenderService.getLenderById(lenderId);
             if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
-            DataPool status = dataPoolService.getDataPoolById(id);
+            DataPool status = dataPoolService.getDataPoolById(statusDTO.getStatusId());
             if (status == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             lender.setStatus(status);
-            lenderService.update(lender, id);
+            lenderService.update(lender, lenderId);
 
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, status.getEnumLabel(), "Lender status is set!");
         } catch (Exception e) {
@@ -192,20 +192,20 @@ public ResponseEntity<Object> getLenderConfidentialFiles(@PathVariable Long id) 
         }
     }
 
-    @PostMapping("/list-all-renters/{id}/set-status")
+    @PostMapping("/list-all-renters/{renterId}/set-status")
     @Transactional
-    public ResponseEntity<Object> setRenterStatus(@RequestBody StatusDTO statusDTO, @PathVariable Long id) {
+    public ResponseEntity<Object> setRenterStatus(@RequestBody StatusDTO statusDTO, @PathVariable Long renterId) {
         try {
-            Renter renter = renterService.getRenterById(id);
+            Renter renter = renterService.getRenterById(renterId);
             if (renter == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter not found !");
             }
-            DataPool status = dataPoolService.getDataPoolById(id);
+            DataPool status = dataPoolService.getDataPoolById(statusDTO.getStatusId());
             if (status == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter not found !");
             }
             renter.setStatus(status);
-            renterService.update(renter, id);
+            renterService.update(renter, renterId);
 
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, status.getEnumLabel(), "Renter status is set!");
         } catch (Exception e) {
@@ -215,20 +215,20 @@ public ResponseEntity<Object> getLenderConfidentialFiles(@PathVariable Long id) 
 
 
 
-    @PostMapping("/list-all-vehicles/{id}/set-status")
+    @PostMapping("/list-all-vehicles/{vehicleId}/set-status")
     @Transactional
-    public ResponseEntity<Object> setVehicleStatus(@RequestBody StatusDTO statusDTO, @PathVariable Long id) {
+    public ResponseEntity<Object> setVehicleStatus(@RequestBody StatusDTO statusDTO, @PathVariable Long vehicleId) {
         try {
-            Vehicle vehicle = vehicleService.getVehicleById(id);
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
             if (vehicle == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
-            DataPool status = dataPoolService.getDataPoolById(id);
+            DataPool status = dataPoolService.getDataPoolById(statusDTO.getStatusId());
             if (status == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             vehicle.setStatus(status);
-            vehicleService.update(vehicle, id);
+            vehicleService.update(vehicle, vehicleId);
 
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, status.getEnumLabel(), "Lender status is set!");
         } catch (Exception e) {
