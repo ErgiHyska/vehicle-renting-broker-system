@@ -18,39 +18,29 @@ public class VehicleQueryDsl implements QueryDsl<VehicleFilter> {
     public Predicate filter(VehicleFilter filter) {
         BooleanBuilder query = new BooleanBuilder();
 
-        if (StringUtils.hasText(filter.getBrand())) {
-            query.and(qVehicle.Brand.containsIgnoreCase(filter.getBrand()));
+
+        if (filter.getTransmissionTypeId()!=null) {
+            query.and(qVehicle.transmissionType.id.eq(filter.getTransmissionTypeId()));
         }
-        if (StringUtils.hasText(filter.getColor())) {
-            query.and(qVehicle.color.containsIgnoreCase(filter.getColor()));
-        }
-        if (StringUtils.hasText(filter.getType())) {
-            query.and(qVehicle.type.containsIgnoreCase(filter.getType()));
-        }
-        if (StringUtils.hasText(filter.getModel())) {
-            query.and(qVehicle.model.containsIgnoreCase(filter.getModel()));
-        }
-        if (StringUtils.hasText(filter.getTransmissionType())) {
-            query.and(qVehicle.transmissionType.containsIgnoreCase(filter.getTransmissionType()));
-        }
-        if (StringUtils.hasText(filter.getEngineType())) {
-            query.and(qVehicle.engineType.containsIgnoreCase(filter.getEngineType()));
-        }
-        if (filter.getEngineSize()!=null) {
-            query.and(qVehicle.engineSize.eq(filter.getEngineSize()));
-        }
-        if (filter.getNoOfSeats()!=null) {
-            query.and(qVehicle.noOfSeats.eq(filter.getNoOfSeats()));
-        }
-        if (filter.getAvailable()!=null) {
-            query.and(qVehicle.available);
-        }
-        if (filter.getProductionYear()!=null) {
-            query.and(qVehicle.productionYear.eq(filter.getProductionYear()));
+        if (filter.getEngineType()!=null) {
+            query.and(qVehicle.engineType.id.eq(filter.getEngineType()));
         }
         if (filter.getLocationId()!=null) {
             query.and(qVehicle.location.id.eq(filter.getLocationId()));
         }
+        if (filter.getMinPrice()!=null) {
+            query.and(qVehicle.vehicleCommerce.pricePerDay.goe(filter.getMinPrice()));
+        }
+        if (filter.getMaxPrice()!=null) {
+            query.and(qVehicle.vehicleCommerce.pricePerDay.loe(filter.getMaxPrice()));
+        }
+        if (filter.getStartingDateAvailable()!=null) {
+            query.and(qVehicle.vehicleCommerce.dateAvailable.loe(filter.getStartingDateAvailable()));
+        }
+        if (filter.getStartingDateAvailable()!=null) {
+            query.and(qVehicle.vehicleCommerce.dateAvailable.loe(filter.getStartingDateAvailable()));
+        }
+
 
         return query;
     }

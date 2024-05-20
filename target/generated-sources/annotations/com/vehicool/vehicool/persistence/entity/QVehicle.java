@@ -32,7 +32,7 @@ public class QVehicle extends EntityPathBase<Vehicle> {
 
     public final NumberPath<Double> engineSize = createNumber("engineSize", Double.class);
 
-    public final StringPath engineType = createString("engineType");
+    public final QDataPool engineType;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -50,7 +50,7 @@ public class QVehicle extends EntityPathBase<Vehicle> {
 
     public final QDataPool status;
 
-    public final StringPath transmissionType = createString("transmissionType");
+    public final QDataPool transmissionType;
 
     public final StringPath type = createString("type");
 
@@ -78,9 +78,11 @@ public class QVehicle extends EntityPathBase<Vehicle> {
 
     public QVehicle(Class<? extends Vehicle> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.engineType = inits.isInitialized("engineType") ? new QDataPool(forProperty("engineType")) : null;
         this.lender = inits.isInitialized("lender") ? new QLender(forProperty("lender"), inits.get("lender")) : null;
         this.location = inits.isInitialized("location") ? new QDataPool(forProperty("location")) : null;
         this.status = inits.isInitialized("status") ? new QDataPool(forProperty("status")) : null;
+        this.transmissionType = inits.isInitialized("transmissionType") ? new QDataPool(forProperty("transmissionType")) : null;
         this.vehicleCommerce = inits.isInitialized("vehicleCommerce") ? new QVehicleCommerce(forProperty("vehicleCommerce"), inits.get("vehicleCommerce")) : null;
     }
 

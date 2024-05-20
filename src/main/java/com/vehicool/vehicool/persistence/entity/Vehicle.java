@@ -31,12 +31,6 @@ public class Vehicle {
     @Column(name="model",nullable = false)
     private String model;
 
-    @Column(name="transmission_type",nullable = false)
-    private String transmissionType;
-
-    @Column(name="engine_type",nullable = false)
-    private String engineType;
-
     @Column(name="engine_size",nullable = false)
     private Double engineSize;
 
@@ -73,4 +67,13 @@ public class Vehicle {
 
     @OneToOne(mappedBy ="vehicle")
     private VehicleCommerce vehicleCommerce;
+
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "transmission_type")
+    private DataPool transmissionType;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "engine_type")
+    private DataPool engineType;
 }

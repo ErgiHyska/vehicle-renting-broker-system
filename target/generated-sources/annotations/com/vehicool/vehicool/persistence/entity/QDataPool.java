@@ -22,6 +22,8 @@ public class QDataPool extends EntityPathBase<DataPool> {
 
     public final ListPath<Contract, QContract> contractList = this.<Contract, QContract>createList("contractList", Contract.class, QContract.class, PathInits.DIRECT2);
 
+    public final ListPath<Vehicle, QVehicle> engineTypeVehicles = this.<Vehicle, QVehicle>createList("engineTypeVehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
+
     public final StringPath enumLabel = createString("enumLabel");
 
     public final StringPath enumName = createString("enumName");
@@ -33,6 +35,8 @@ public class QDataPool extends EntityPathBase<DataPool> {
     public final ListPath<Vehicle, QVehicle> statusVehicles = this.<Vehicle, QVehicle>createList("statusVehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
 
     public final ListPath<TranslatedDataPool, QTranslatedDataPool> translatedDataPoolList = this.<TranslatedDataPool, QTranslatedDataPool>createList("translatedDataPoolList", TranslatedDataPool.class, QTranslatedDataPool.class, PathInits.DIRECT2);
+
+    public final ListPath<Vehicle, QVehicle> transmissionVehicles = this.<Vehicle, QVehicle>createList("transmissionVehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
 
     public QDataPool(String variable) {
         super(DataPool.class, forVariable(variable));
