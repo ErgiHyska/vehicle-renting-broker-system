@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,32 +18,35 @@ public class QAdministrator extends EntityPathBase<Administrator> {
 
     private static final long serialVersionUID = -1349430018L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QAdministrator administrator = new QAdministrator("administrator");
-
-    public final NumberPath<Integer> age = createNumber("age", Integer.class);
-
-    public final StringPath email = createString("email");
-
-    public final StringPath firstName = createString("firstName");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath lastName = createString("lastName");
-
-    public final StringPath phoneNumber = createString("phoneNumber");
-
     public final StringPath status = createString("status");
 
+    public final QUser user;
+
     public QAdministrator(String variable) {
-        super(Administrator.class, forVariable(variable));
+        this(Administrator.class, forVariable(variable), INITS);
     }
 
     public QAdministrator(Path<? extends Administrator> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QAdministrator(PathMetadata metadata) {
-        super(Administrator.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QAdministrator(PathMetadata metadata, PathInits inits) {
+        this(Administrator.class, metadata, inits);
+    }
+
+    public QAdministrator(Class<? extends Administrator> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.user = inits.isInitialized("user") ? new QUser(forProperty("user"), inits.get("user")) : null;
     }
 
 }

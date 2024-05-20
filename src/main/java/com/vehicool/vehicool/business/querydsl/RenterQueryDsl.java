@@ -19,16 +19,16 @@ public class RenterQueryDsl implements QueryDsl<RenterFilter> {
 
 
         if (StringUtils.hasText(filter.getFirstName())) {
-            query.and(qRenter.firstName.containsIgnoreCase(filter.getFirstName()));
+            query.and(qRenter.user.firstName.containsIgnoreCase(filter.getFirstName()));
         }
         if (StringUtils.hasText(filter.getLastName())) {
-            query.and(qRenter.lastName.containsIgnoreCase(filter.getLastName()));
+            query.and(qRenter.user.lastName.containsIgnoreCase(filter.getLastName()));
         }
         if (StringUtils.hasText(filter.getEmail())) {
-            query.and(qRenter.email.containsIgnoreCase(filter.getEmail()));
+            query.and(qRenter.user.email.containsIgnoreCase(filter.getEmail()));
         }
         if (StringUtils.hasText(filter.getPhoneNumber())) {
-            query.and(qRenter.phoneNumber.containsIgnoreCase(filter.getPhoneNumber()));
+            query.and(qRenter.user.phoneNumber.containsIgnoreCase(filter.getPhoneNumber()));
         }
 
         return query;

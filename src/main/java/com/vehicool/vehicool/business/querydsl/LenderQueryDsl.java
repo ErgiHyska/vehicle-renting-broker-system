@@ -20,16 +20,16 @@ public class LenderQueryDsl implements QueryDsl<LenderFilter> {
 
 
         if (StringUtils.hasText(filter.getFirstName())) {
-            query.and(qLender.firstName.containsIgnoreCase(filter.getFirstName()));
+            query.and(qLender.user.firstName.containsIgnoreCase(filter.getFirstName()));
         }
         if (StringUtils.hasText(filter.getLastName())) {
-            query.and(qLender.lastName.containsIgnoreCase(filter.getLastName()));
+            query.and(qLender.user.lastName.containsIgnoreCase(filter.getLastName()));
         }
         if (StringUtils.hasText(filter.getEmail())) {
-            query.and(qLender.email.containsIgnoreCase(filter.getEmail()));
+            query.and(qLender.user.email.containsIgnoreCase(filter.getEmail()));
         }
         if (StringUtils.hasText(filter.getPhoneNumber())) {
-            query.and(qLender.phoneNumber.containsIgnoreCase(filter.getPhoneNumber()));
+            query.and(qLender.user.phoneNumber.containsIgnoreCase(filter.getPhoneNumber()));
         }
 
         return query;

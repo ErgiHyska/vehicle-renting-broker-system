@@ -22,27 +22,19 @@ public class QLender extends EntityPathBase<Lender> {
 
     public static final QLender lender = new QLender("lender");
 
-    public final NumberPath<Integer> age = createNumber("age", Integer.class);
-
     public final ListPath<ConfidentialFile, QConfidentialFile> confidentialFiles = this.<ConfidentialFile, QConfidentialFile>createList("confidentialFiles", ConfidentialFile.class, QConfidentialFile.class, PathInits.DIRECT2);
 
     public final ListPath<Contract, QContract> contractSigned = this.<Contract, QContract>createList("contractSigned", Contract.class, QContract.class, PathInits.DIRECT2);
 
-    public final StringPath email = createString("email");
-
-    public final StringPath firstName = createString("firstName");
-
     public final NumberPath<Long> id = createNumber("id", Long.class);
-
-    public final StringPath lastName = createString("lastName");
-
-    public final StringPath phoneNumber = createString("phoneNumber");
 
     public final ListPath<RenterReview, QRenterReview> reviewsGiven = this.<RenterReview, QRenterReview>createList("reviewsGiven", RenterReview.class, QRenterReview.class, PathInits.DIRECT2);
 
     public final ListPath<LenderReview, QLenderReview> reviewsRecieved = this.<LenderReview, QLenderReview>createList("reviewsRecieved", LenderReview.class, QLenderReview.class, PathInits.DIRECT2);
 
     public final QDataPool status;
+
+    public final QUser user;
 
     public final ListPath<Vehicle, QVehicle> vehicles = this.<Vehicle, QVehicle>createList("vehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
 
@@ -65,6 +57,7 @@ public class QLender extends EntityPathBase<Lender> {
     public QLender(Class<? extends Lender> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.status = inits.isInitialized("status") ? new QDataPool(forProperty("status")) : null;
+        this.user = inits.isInitialized("user") ? new QUser(forProperty("user"), inits.get("user")) : null;
     }
 
 }

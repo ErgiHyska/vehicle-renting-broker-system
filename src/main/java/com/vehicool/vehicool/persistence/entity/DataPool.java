@@ -37,4 +37,20 @@ public class DataPool {
     @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Vehicle> locationVehicles;
+
+    @OneToMany(mappedBy = "userStatus", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<User> users;
+
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Administrator> administrators;
+
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Renter> renters;
+
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Lender> lenders;
 }

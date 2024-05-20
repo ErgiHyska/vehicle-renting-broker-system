@@ -13,20 +13,9 @@ public class Administrator {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="first_name",nullable = false)
-    private String firstName;
-
-    @Column(name="last_name",nullable = false)
-    private String lastName;
-
-    @Column(name="age",nullable = false)
-    private Integer age;
-
-    @Column(name="email",nullable = false)
-    private String email;
-
-    @Column(name="phone_number",nullable = false)
-    private String phoneNumber;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name="status",nullable = false)
     private String status;

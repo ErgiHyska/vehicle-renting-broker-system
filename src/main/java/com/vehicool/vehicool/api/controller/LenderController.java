@@ -30,26 +30,13 @@ import static com.vehicool.vehicool.util.constants.Messages.*;
 public class LenderController {
     private final ModelMapper modelMapper;
     private final LenderService lenderService;
-    private final DataPoolService dataPoolService;
+   private final DataPoolService dataPoolService;
     private final VehicleService vehicleService;
     private final VehicleCommerceService vehicleCommerceService;
     private final ContractService contractService;
     private final RenterReviewService renterReviewService;
     private final StorageService storageService;
 
-    @PostMapping("/create")
-    public ResponseEntity<Object> create(@RequestBody @Valid LenderDTO lenderDTO) {
-        try {
-            Lender lender = modelMapper.map(lenderDTO, Lender.class);
-            lender.setStatus(dataPoolService.getDataPoolById(1l));
-            lenderService.save(lender);
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, lender, RECORD_CREATED);
-        } catch (Exception e) {
-            log.error(ERROR_OCCURRED, e.getMessage());
-            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
-
-        }
-    }
 
     @PutMapping("/{lenderId}/update")
     public ResponseEntity<Object> update(@RequestBody @Valid LenderDTO lenderDTO, @PathVariable Long lenderId) {
