@@ -249,7 +249,7 @@ public class LenderController {
             }
 
             DataPool engineType = dataPoolService.getDataPoolById(vehicleDTO.getEngineTypeId());
-            if (vehicleType == null || transmission.getEnumName().matches("engineType")) {
+            if (engineType == null || transmission.getEnumName().matches("engineType")) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Engine type type not found/exists !");
             }
             Vehicle vehicle = modelMapper.map(vehicleDTO, Vehicle.class);
