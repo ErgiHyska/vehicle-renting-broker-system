@@ -239,9 +239,25 @@ public class LenderController {
             if (locaton == null && locaton.getEnumName().matches("location")) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Location not found/exists !");
             }
+            DataPool transmission = dataPoolService.getDataPoolById(vehicleDTO.getTransmissionTypeId());
+            if (transmission == null && transmission.getEnumName().matches("transmissionType")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Transmission type not found/exists !");
+            }
+            DataPool vehicleType = dataPoolService.getDataPoolById(vehicleDTO.getVehicleTypeId());
+            if (vehicleType == null && transmission.getEnumName().matches("vehicleType")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle type type not found/exists !");
+            }
+
+            DataPool engineType = dataPoolService.getDataPoolById(vehicleDTO.getEngineTypeId());
+            if (vehicleType == null && transmission.getEnumName().matches("engineType")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Engine type type not found/exists !");
+            }
             Vehicle vehicle = modelMapper.map(vehicleDTO, Vehicle.class);
             vehicle.setLender(lender);
             vehicle.setLocation(locaton);
+            vehicle.setEngineType(engineType);
+            vehicle.setVehicleType(vehicleType);
+            vehicle.setTransmissionType(transmission);
             vehicle.setAvailable(false);
             vehicle.setStatus(dataPoolService.getDataPoolById(1l));
             vehicleService.save(vehicle);
