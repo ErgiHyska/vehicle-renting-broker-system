@@ -52,11 +52,11 @@ public class QVehicle extends EntityPathBase<Vehicle> {
 
     public final QDataPool transmissionType;
 
-    public final StringPath type = createString("type");
-
     public final QVehicleCommerce vehicleCommerce;
 
     public final ListPath<ConfidentialFile, QConfidentialFile> vehicleRegistrations = this.<ConfidentialFile, QConfidentialFile>createList("vehicleRegistrations", ConfidentialFile.class, QConfidentialFile.class, PathInits.DIRECT2);
+
+    public final QDataPool vehicleType;
 
     public final StringPath vin = createString("vin");
 
@@ -84,6 +84,7 @@ public class QVehicle extends EntityPathBase<Vehicle> {
         this.status = inits.isInitialized("status") ? new QDataPool(forProperty("status")) : null;
         this.transmissionType = inits.isInitialized("transmissionType") ? new QDataPool(forProperty("transmissionType")) : null;
         this.vehicleCommerce = inits.isInitialized("vehicleCommerce") ? new QVehicleCommerce(forProperty("vehicleCommerce"), inits.get("vehicleCommerce")) : null;
+        this.vehicleType = inits.isInitialized("vehicleType") ? new QDataPool(forProperty("vehicleType")) : null;
     }
 
 }
