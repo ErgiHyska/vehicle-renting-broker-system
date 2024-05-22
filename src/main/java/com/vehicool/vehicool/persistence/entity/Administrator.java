@@ -1,5 +1,6 @@
 package com.vehicool.vehicool.persistence.entity;
 
+import com.vehicool.vehicool.security.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

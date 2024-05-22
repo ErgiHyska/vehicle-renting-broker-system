@@ -34,7 +34,7 @@ public class QRenter extends EntityPathBase<Renter> {
 
     public final QDataPool status;
 
-    public final QUser user;
+    public final com.vehicool.vehicool.security.user.QUser user;
 
     public QRenter(String variable) {
         this(Renter.class, forVariable(variable), INITS);
@@ -55,7 +55,7 @@ public class QRenter extends EntityPathBase<Renter> {
     public QRenter(Class<? extends Renter> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.status = inits.isInitialized("status") ? new QDataPool(forProperty("status")) : null;
-        this.user = inits.isInitialized("user") ? new QUser(forProperty("user"), inits.get("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.vehicool.vehicool.security.user.QUser(forProperty("user"), inits.get("user")) : null;
     }
 
 }

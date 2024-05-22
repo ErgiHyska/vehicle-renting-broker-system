@@ -26,7 +26,7 @@ public class QAdministrator extends EntityPathBase<Administrator> {
 
     public final StringPath status = createString("status");
 
-    public final QUser user;
+    public final com.vehicool.vehicool.security.user.QUser user;
 
     public QAdministrator(String variable) {
         this(Administrator.class, forVariable(variable), INITS);
@@ -46,7 +46,7 @@ public class QAdministrator extends EntityPathBase<Administrator> {
 
     public QAdministrator(Class<? extends Administrator> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.user = inits.isInitialized("user") ? new QUser(forProperty("user"), inits.get("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.vehicool.vehicool.security.user.QUser(forProperty("user"), inits.get("user")) : null;
     }
 
 }

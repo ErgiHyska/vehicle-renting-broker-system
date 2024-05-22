@@ -40,7 +40,7 @@ public class QDataPool extends EntityPathBase<DataPool> {
 
     public final ListPath<TranslatedDataPool, QTranslatedDataPool> translatedDataPoolList = this.<TranslatedDataPool, QTranslatedDataPool>createList("translatedDataPoolList", TranslatedDataPool.class, QTranslatedDataPool.class, PathInits.DIRECT2);
 
-    public final ListPath<User, QUser> users = this.<User, QUser>createList("users", User.class, QUser.class, PathInits.DIRECT2);
+    public final ListPath<com.vehicool.vehicool.security.user.User, com.vehicool.vehicool.security.user.QUser> users = this.<com.vehicool.vehicool.security.user.User, com.vehicool.vehicool.security.user.QUser>createList("users", com.vehicool.vehicool.security.user.User.class, com.vehicool.vehicool.security.user.QUser.class, PathInits.DIRECT2);
 
     public QDataPool(String variable) {
         super(DataPool.class, forVariable(variable));
