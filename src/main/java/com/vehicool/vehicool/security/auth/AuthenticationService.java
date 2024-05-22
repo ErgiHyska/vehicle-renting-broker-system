@@ -2,6 +2,7 @@ package com.vehicool.vehicool.security.auth;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vehicool.vehicool.business.service.DataPoolService;
 import com.vehicool.vehicool.security.config.JwtService;
 import com.vehicool.vehicool.security.token.Token;
 import com.vehicool.vehicool.security.token.TokenRepository;
@@ -28,14 +29,16 @@ public class AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private final DataPoolService dataPoolService;
 
   public AuthenticationResponse register(RegisterRequest request) {
-    var user = User.builder()
-        .firstname(request.getFirstname())
-        .lastname(request.getLastname())
-        .email(request.getEmail())
-        .password(passwordEncoder.encode(request.getPassword()))
-        .build();
+    User user = User.builder().firstname(request.getFirstname())
+            .lastname(request.getLastname())
+            .email(request.getEmail())
+            .username(request.getUsername())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .userStatus(dataPoolService.getDataPoolById(1l)).build();
+
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
@@ -53,7 +56,7 @@ public class AuthenticationService {
             request.getPassword()
         )
     );
-    var user = repository.findUserByUsername(request.getUsername())
+    var user = repository.findByUsername(request.getUsername())
         .orElseThrow();
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
@@ -93,14 +96,14 @@ public class AuthenticationService {
   ) throws IOException {
     final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     final String refreshToken;
-    final String userEmail;
+    final String username;
     if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
       return;
     }
     refreshToken = authHeader.substring(7);
-    userEmail = jwtService.extractUsername(refreshToken);
-    if (userEmail != null) {
-      var user = this.repository.findUserByUsername(userEmail)
+    username = jwtService.extractUsername(refreshToken);
+    if (username != null) {
+      var user = this.repository.findByUsername(username)
               .orElseThrow();
       if (jwtService.isTokenValid(refreshToken, user)) {
         var accessToken = jwtService.generateToken(user);

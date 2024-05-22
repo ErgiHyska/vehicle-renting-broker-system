@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
-import static com.vehicool.vehicool.security.user.Role.ADMIN;
+import static com.vehicool.vehicool.security.user.Role.*;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -25,7 +25,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration {
 
     private static final String[] WHITE_LIST_URL = {
-            "swagger-ui/**","/vehicle/**",
+            "/swagger-ui/**","/vehicle/**",
             "/auth/**"};
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
@@ -38,7 +38,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers("/admin-panel/").hasAnyRole(ADMIN.name())
+                                .requestMatchers("/admin-panel/**").hasAnyRole(ADMIN.name())
+                                .requestMatchers("/lender/**").hasAnyRole(ADMIN.name(),LENDER.name())
+                                .requestMatchers("/renter/**").hasAnyRole(ADMIN.name(),RENTER.name())
                                 .anyRequest()
                                 .authenticated()
                 )
