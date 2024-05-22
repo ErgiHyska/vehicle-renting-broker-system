@@ -43,7 +43,7 @@ import static com.vehicool.vehicool.util.constants.Messages.*;
 @RestController
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("admin-panel/")
+@RequestMapping("/admin-panel")
 public class AdminController {
     private final ModelMapper modelMapper;
     private final RenterService renterService;
