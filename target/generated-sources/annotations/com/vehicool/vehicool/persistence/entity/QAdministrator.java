@@ -24,7 +24,7 @@ public class QAdministrator extends EntityPathBase<Administrator> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath status = createString("status");
+    public final QDataPool status;
 
     public final com.vehicool.vehicool.security.user.QUser user;
 
@@ -46,6 +46,7 @@ public class QAdministrator extends EntityPathBase<Administrator> {
 
     public QAdministrator(Class<? extends Administrator> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.status = inits.isInitialized("status") ? new QDataPool(forProperty("status")) : null;
         this.user = inits.isInitialized("user") ? new com.vehicool.vehicool.security.user.QUser(forProperty("user"), inits.get("user")) : null;
     }
 

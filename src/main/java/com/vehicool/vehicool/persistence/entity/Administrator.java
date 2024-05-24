@@ -18,6 +18,7 @@ public class Administrator {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name="status",nullable = false)
-    private String status;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "status")
+    private DataPool status;
 }

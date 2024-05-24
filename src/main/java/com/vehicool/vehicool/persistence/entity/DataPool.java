@@ -23,10 +23,6 @@ public class DataPool {
     @Column(name = "enum_name",nullable = false)
     private String enumName;
 
-    @OneToMany(mappedBy = "enumLabel")
-    @JsonBackReference
-    private List<TranslatedDataPool> translatedDataPoolList;
-
     @OneToMany(mappedBy = "contractualStatus", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Contract> contractList;

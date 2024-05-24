@@ -20,7 +20,7 @@ public class BannedUsersAppealing {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name="price_per_day",nullable = false)
+    @Column(name="description",nullable = false)
     private String Description;
 
     @ManyToOne(optional = false)

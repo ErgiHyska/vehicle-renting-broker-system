@@ -17,7 +17,8 @@ public class Lender {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(optional = false,mappedBy = "lenderProfile")
+
+    @OneToOne(optional = false)
     @JoinColumn(name = "user_id")
     private User user;
 
