@@ -5,40 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6730ecd-9b7b-4bf6-81fe-06dbbbbd8425" name="Changes" comment="Updated">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/dto/UserStatusDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/AdminController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/LenderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/LenderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/RenterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/RenterController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/UserController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/AdministratorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/AdministratorService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/DataPoolService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/DataPoolService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/LenderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/LenderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/RenterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/RenterService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/BannedUsersAppealing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/BannedUsersAppealing.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/ConfidentialFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/ConfidentialFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Lender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Lender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Renter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Renter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/repository/DataPoolRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/repository/DataPoolRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/Role.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/data-pool-inserts.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/data-pool-inserts.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/api/controller/AdminController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/DataPoolService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/DataPoolService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/LenderService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/LenderService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/RenterService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/RenterService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/ConfidentialFile$ConfidentialFileBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/ConfidentialFile$ConfidentialFileBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/ConfidentialFile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/ConfidentialFile.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/Lender.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/Lender.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QConfidentialFile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QConfidentialFile.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QLender.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QLender.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QRenter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QRenter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/Renter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/Renter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/repository/DataPoolRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/repository/DataPoolRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QConfidentialFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QConfidentialFile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QLender.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QLender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QRenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QRenter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -404,30 +376,6 @@
           <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/config/JwtAuthenticationFilter.java</url>
           <line>46</line>
           <option name="timeStamp" value="37" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/config/JwtAuthenticationFilter.java</url>
-          <line>47</line>
-          <properties>
-            <option name="lambda-ordinal" value="-1" />
-          </properties>
-          <option name="timeStamp" value="38" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/config/ApplicationConfig.java</url>
-          <line>26</line>
-          <properties>
-            <option name="lambda-ordinal" value="-1" />
-          </properties>
-          <option name="timeStamp" value="40" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/config/ApplicationConfig.java</url>
-          <line>27</line>
-          <properties>
-            <option name="lambda-ordinal" value="1" />
-          </properties>
-          <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/config/JwtAuthenticationFilter.java</url>

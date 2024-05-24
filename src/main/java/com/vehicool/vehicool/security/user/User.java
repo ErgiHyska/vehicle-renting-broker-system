@@ -57,6 +57,11 @@ public class User implements UserDetails {
     @JoinColumn(name = "status")
     private DataPool userStatus;
 
+
+    @OneToOne(mappedBy = "user")
+    @JsonBackReference
+    private BannedUsersAppealing bannedUsersAppealing;
+
     @OneToOne
     @JoinColumn(name = "lender_profile_id")
     @JsonBackReference

@@ -32,6 +32,8 @@ public class QConfidentialFile extends EntityPathBase<ConfidentialFile> {
 
     public final com.vehicool.vehicool.security.user.QUser user;
 
+    public final QBannedUsersAppealing userBanAppeal;
+
     public final QVehicle vehicle;
 
     public QConfidentialFile(String variable) {
@@ -53,6 +55,7 @@ public class QConfidentialFile extends EntityPathBase<ConfidentialFile> {
     public QConfidentialFile(Class<? extends ConfidentialFile> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.user = inits.isInitialized("user") ? new com.vehicool.vehicool.security.user.QUser(forProperty("user"), inits.get("user")) : null;
+        this.userBanAppeal = inits.isInitialized("userBanAppeal") ? new QBannedUsersAppealing(forProperty("userBanAppeal"), inits.get("userBanAppeal")) : null;
         this.vehicle = inits.isInitialized("vehicle") ? new QVehicle(forProperty("vehicle"), inits.get("vehicle")) : null;
     }
 

@@ -16,7 +16,7 @@ public class BannedUsersAppealing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(optional = false,mappedBy = "lenderProfile")
+    @OneToOne(optional = false)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -25,9 +25,9 @@ public class BannedUsersAppealing {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "status")
-    private DataPool status;;
+    private DataPool status;
 
-    @OneToMany(mappedBy ="bannedUsersAppealing")
+    @OneToMany(mappedBy ="userBanAppeal")
     private List<ConfidentialFile> confidentialFiles;
 
 

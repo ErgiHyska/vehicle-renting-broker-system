@@ -40,6 +40,6 @@ public class ConfidentialFile {
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "appealing_id")
-    private BannedUsersAppealing bannedUsersAppealing;
+    private BannedUsersAppealing userBanAppeal;
 
 }
