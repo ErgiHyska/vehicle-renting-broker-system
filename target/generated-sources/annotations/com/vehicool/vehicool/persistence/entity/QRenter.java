@@ -22,8 +22,6 @@ public class QRenter extends EntityPathBase<Renter> {
 
     public static final QRenter renter = new QRenter("renter");
 
-    public final ListPath<ConfidentialFile, QConfidentialFile> confidentialFiles = this.<ConfidentialFile, QConfidentialFile>createList("confidentialFiles", ConfidentialFile.class, QConfidentialFile.class, PathInits.DIRECT2);
-
     public final ListPath<Contract, QContract> contractSigned = this.<Contract, QContract>createList("contractSigned", Contract.class, QContract.class, PathInits.DIRECT2);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);

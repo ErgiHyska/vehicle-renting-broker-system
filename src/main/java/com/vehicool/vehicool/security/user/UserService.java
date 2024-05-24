@@ -1,11 +1,21 @@
 package com.vehicool.vehicool.security.user;
 
+import com.vehicool.vehicool.persistence.entity.ConfidentialFile;
+import com.vehicool.vehicool.persistence.entity.Lender;
+import com.vehicool.vehicool.persistence.entity.Renter;
+import com.vehicool.vehicool.persistence.repository.DatabaseStorageRepository;
+import com.vehicool.vehicool.util.fileconfigs.ImageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -13,6 +23,13 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+    private final DatabaseStorageRepository databaseStorageRepository;
+    public User getUserByUsername(String username){
+        return repository.findByUsername(username).orElse(null);
+    }
+    public List<User> getAllUsers(){
+        return repository.findAll();
+    }
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -31,5 +48,36 @@ public class UserService {
 
         // save the new password
         repository.save(user);
+    }
+    public List<byte[]> getUserConfidentialFiles(String username) {
+        User user = repository.findByUsername(username).orElse(null);
+        if(user==null){
+            return null;
+        }
+        List<byte[]> images = new ArrayList<>();
+        List<ConfidentialFile> lenderConfidentialFiled=user.getConfidentialFiles();
+        for(ConfidentialFile currentFile:lenderConfidentialFiled){
+            byte[] image = ImageUtils.decompressImage(currentFile.getImageData());
+            images.add(image);
+        }
+        return images;
+    }
+    @Transactional
+    public String uploadRenterConfidentialFile(List<MultipartFile> file, Principal connectedUser) throws IOException {
+
+        User user = repository.findByUsername(connectedUser.getName()).orElse(null);
+        if(user==null){
+            return "USER NOT FOUND!";
+        }
+        List<ConfidentialFile> list = new ArrayList<>();
+        for(MultipartFile current:file){
+            ConfidentialFile confidentialFile =ConfidentialFile.builder().name(current.getOriginalFilename()).type(current.getContentType()).user(user).imageData(ImageUtils.compressImage(current.getBytes())).build();
+            list.add(confidentialFile);
+        }
+        databaseStorageRepository.saveAll(list);
+        if (!list.isEmpty()) {
+            return "file uploaded successfully !";
+        }
+        return null;
     }
 }

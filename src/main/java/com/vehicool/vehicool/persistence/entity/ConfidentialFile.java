@@ -1,6 +1,7 @@
 package com.vehicool.vehicool.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.vehicool.vehicool.security.user.User;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,17 +28,18 @@ public class ConfidentialFile {
     private byte[] imageData;
 
     @ManyToOne
-    @JoinColumn(name = "lender_id")
+    @JoinColumn(name = "user_id")
     @JsonBackReference
-    private Lender lender;
-
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "renter_id")
-    private Renter renter;
+    private User user ;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "appealing_id")
+    private BannedUsersAppealing bannedUsersAppealing;
+
 }

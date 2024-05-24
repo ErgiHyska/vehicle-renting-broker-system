@@ -86,7 +86,7 @@ public class LenderController {
         }
     }
 
-    @GetMapping("/{lenderId}/lender-vehicles/{vehicleId}")
+    @PostMapping("/{lenderId}/lender-vehicles/{vehicleId}/set-commercial-data")
     @Transactional
     public ResponseEntity<Object> changeVehicleCommercialDetails(@PathVariable Long lenderId, @PathVariable Long vehicleId, @RequestBody VehicleCommercialDTO vehicleCommercialDTO) {
         try {
@@ -340,12 +340,6 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
 
         }
-    }
-
-    @PostMapping(value = "/{lenderId}/upload-confidential-data", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> uploadImage(@PathVariable Long lenderId, @RequestParam("image") List<MultipartFile> files) throws IOException {
-        String uploadImage = lenderService.uploadLenderConfidentialFile(files, lenderId);
-        return ResponseMapper.map(SUCCESS, HttpStatus.OK, uploadImage, RECORDS_RECEIVED);
     }
 
     @PostMapping(value = "/{lenderId}/lender-vehicles/{vehicleId}/upload-vehicle-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -26,13 +26,11 @@ public class QConfidentialFile extends EntityPathBase<ConfidentialFile> {
 
     public final ArrayPath<byte[], Byte> imageData = createArray("imageData", byte[].class);
 
-    public final QLender lender;
-
     public final StringPath name = createString("name");
 
-    public final QRenter renter;
-
     public final StringPath type = createString("type");
+
+    public final com.vehicool.vehicool.security.user.QUser user;
 
     public final QVehicle vehicle;
 
@@ -54,8 +52,7 @@ public class QConfidentialFile extends EntityPathBase<ConfidentialFile> {
 
     public QConfidentialFile(Class<? extends ConfidentialFile> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.lender = inits.isInitialized("lender") ? new QLender(forProperty("lender"), inits.get("lender")) : null;
-        this.renter = inits.isInitialized("renter") ? new QRenter(forProperty("renter"), inits.get("renter")) : null;
+        this.user = inits.isInitialized("user") ? new com.vehicool.vehicool.security.user.QUser(forProperty("user"), inits.get("user")) : null;
         this.vehicle = inits.isInitialized("vehicle") ? new QVehicle(forProperty("vehicle"), inits.get("vehicle")) : null;
     }
 

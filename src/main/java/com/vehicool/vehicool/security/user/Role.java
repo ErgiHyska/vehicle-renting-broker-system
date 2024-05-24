@@ -14,7 +14,7 @@ import static com.vehicool.vehicool.security.user.Permission.*;
 
 @RequiredArgsConstructor
 public enum Role {
-
+    BANNED_USER(Collections.emptySet()),
     USER(Collections.emptySet()),
     ADMIN(
             Set.of(

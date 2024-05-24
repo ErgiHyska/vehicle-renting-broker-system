@@ -5,12 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6730ecd-9b7b-4bf6-81fe-06dbbbbd8425" name="Changes" comment="Updated">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/dto/UserStatusDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/config/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/config/JwtService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/config/OpenApiConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/AdminController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/LenderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/LenderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/RenterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/RenterController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/api/controller/UserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/AdministratorService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/AdministratorService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/DataPoolService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/DataPoolService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/LenderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/LenderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/RenterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/business/service/RenterService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/ConfidentialFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/ConfidentialFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Lender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Lender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Renter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/entity/Renter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/repository/DataPoolRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/persistence/repository/DataPoolRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/Role.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/user/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/data-pool-inserts.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/data-pool-inserts.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/api/controller/AdminController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/DataPoolService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/DataPoolService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/LenderService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/LenderService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/RenterService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/business/service/RenterService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/ConfidentialFile$ConfidentialFileBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/ConfidentialFile$ConfidentialFileBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/ConfidentialFile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/ConfidentialFile.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/Lender.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/Lender.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QConfidentialFile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QConfidentialFile.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QLender.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QLender.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QRenter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/QRenter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/Renter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/entity/Renter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/repository/DataPoolRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/vehicool/vehicool/persistence/repository/DataPoolRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QConfidentialFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QConfidentialFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QLender.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QLender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QRenter.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/vehicool/vehicool/persistence/entity/QRenter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +190,8 @@
       <workItem from="1716236151177" duration="551000" />
       <workItem from="1716363295935" duration="1587000" />
       <workItem from="1716366901510" duration="2304000" />
-      <workItem from="1716391485187" duration="15347000" />
+      <workItem from="1716391485187" duration="15649000" />
+      <workItem from="1716468997238" duration="13784000" />
     </task>
     <task id="LOCAL-00001" summary="Test">
       <option name="closed" value="true" />
@@ -268,7 +297,15 @@
       <option name="project" value="LOCAL" />
       <updated>1716413406322</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Updated">
+      <option name="closed" value="true" />
+      <created>1716418864635</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1716418864635</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -419,42 +456,42 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java</url>
-          <line>52</line>
+          <line>58</line>
           <option name="timeStamp" value="47" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java</url>
-          <line>53</line>
+          <line>59</line>
           <option name="timeStamp" value="48" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java</url>
-          <line>54</line>
+          <line>60</line>
           <option name="timeStamp" value="49" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java</url>
-          <line>55</line>
+          <line>61</line>
           <option name="timeStamp" value="50" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java</url>
-          <line>58</line>
+          <line>64</line>
           <option name="timeStamp" value="51" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java</url>
-          <line>59</line>
+          <line>65</line>
           <option name="timeStamp" value="52" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java</url>
-          <line>60</line>
+          <line>66</line>
           <option name="timeStamp" value="53" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/vehicool/vehicool/security/auth/AuthenticationService.java</url>
-          <line>61</line>
+          <line>67</line>
           <option name="timeStamp" value="54" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">

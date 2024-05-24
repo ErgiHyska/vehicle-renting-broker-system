@@ -38,9 +38,6 @@ public class Lender {
     private List<LenderReview> reviewsRecieved;
 
     @OneToMany(mappedBy ="lender")
-    private List<ConfidentialFile> confidentialFiles;
-
-    @OneToMany(mappedBy ="lender")
     @JsonBackReference
     private List<Vehicle> vehicles;
 }

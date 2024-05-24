@@ -3,10 +3,7 @@ package com.vehicool.vehicool.security.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.vehicool.vehicool.persistence.entity.Administrator;
-import com.vehicool.vehicool.persistence.entity.DataPool;
-import com.vehicool.vehicool.persistence.entity.Lender;
-import com.vehicool.vehicool.persistence.entity.Renter;
+import com.vehicool.vehicool.persistence.entity.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +13,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,6 +67,9 @@ public class User implements UserDetails {
     @JoinColumn(name = "renter_profile_id")
     private Renter renterProfile;
 
+    @OneToMany(mappedBy ="user")
+    private List<ConfidentialFile> confidentialFiles;
+
     @OneToOne
     @JsonBackReference
     @JoinColumn(name = "administrator_profile_id")
@@ -81,7 +83,12 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toList());
+        List<SimpleGrantedAuthority> all = new ArrayList<>();
+        for(Role role:roles){
+            List<SimpleGrantedAuthority> current=role.getAuthorities();
+            all.addAll(current);
+        }
+        return all;
     }
 
     @Override
