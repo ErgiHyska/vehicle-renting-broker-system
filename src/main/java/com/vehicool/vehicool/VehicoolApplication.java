@@ -1,6 +1,7 @@
 package com.vehicool.vehicool;
 
 import com.vehicool.vehicool.business.service.AdministratorService;
+import com.vehicool.vehicool.business.service.DataPoolService;
 import com.vehicool.vehicool.security.auth.AuthenticationService;
 import com.vehicool.vehicool.security.auth.RegisterRequest;
 import com.vehicool.vehicool.security.user.Role;
@@ -26,23 +27,30 @@ public class VehicoolApplication {
     private final UserService userService;
     private final AdministratorService administratorService;
     private final JdbcTemplate jdbcTemplate;
+    private final DataPoolService dataPoolService;
 
     public static void main(String[] args) {
         SpringApplication.run(VehicoolApplication.class, args);
     }
+
     @Bean
     public String createOwnerProfile() throws IOException {
-        ClassPathResource resource = new ClassPathResource("inserts.sql");
-        String script = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
-        jdbcTemplate.execute(script);
-        System.out.println("SQL script executed successfully!");
-      authenticationService.register(new RegisterRequest("owner","vehicool","project","vehicool@gmail.com","12345678"));
-      User user =userService.getUserByUsername("owner");
-      Set<Role> roles = new HashSet<>();
-      roles.add(Role.ADMIN);
-      user.setRoles(roles);
-      administratorService.saverUser(user,user.getUsername());
-      return "Owner account created.=======================> Username is :"+user.getUsername();
+        if (dataPoolService.totalElements() == 0) {
+            ClassPathResource resource = new ClassPathResource("inserts.sql");
+            String script = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
+            jdbcTemplate.execute(script);
+            System.out.println("SQL script executed successfully!");
+        }
+        if (userService.getUserByUsername("owner") == null) {
+            authenticationService.register(new RegisterRequest("owner", "vehicool", "project", "vehicool@gmail.com", "12345678"));
+            User user = userService.getUserByUsername("owner");
+            Set<Role> roles = new HashSet<>();
+            roles.add(Role.ADMIN);
+            user.setRoles(roles);
+            administratorService.saverUser(user, user.getUsername());
+            return "Owner account created.=======================> Username is :" + user.getUsername();
+        }
+        return "No initilizers required";
     }
 
 }
