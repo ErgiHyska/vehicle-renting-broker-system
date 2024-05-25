@@ -56,6 +56,9 @@ public class VehicleService {
         }
         List<FileData> fileDataList = new ArrayList<>();
         for (MultipartFile file : files) {
+            if(file== null || file.getContentType().equals("image")){
+                continue;
+            }
             String filePath = FOLDER_PATH + file.getOriginalFilename();
             fileDataList.add(FileData.builder().name(file.getOriginalFilename()).vehicle(vehicle).type(file.getContentType()).filePath(filePath).build());
             file.transferTo(new File(filePath));
