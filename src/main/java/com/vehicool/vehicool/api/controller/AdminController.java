@@ -72,6 +72,49 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+    @GetMapping("/list-all-vehicles/{id}")
+    @Transactional
+    public ResponseEntity<Object> vehicleData(@PathVariable Long id) {
+        try {
+            Vehicle vehicle = vehicleService.getVehicleById(id);
+            if (vehicle == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "VEHICLE NOT FOUND!");
+            }
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, RECORDS_RECEIVED);
+        } catch (PropertyReferenceException e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        } catch (Exception ex) {
+            log.error(ERROR_OCCURRED, ex.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
+        }
+    }
+    @GetMapping("/list-all-vehicles/{vehicleId}/confidential-data")
+    @Transactional
+    public ResponseEntity<Object> vehicleConfidentialData(@PathVariable Long vehicleId) {
+        try {
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            if (vehicle == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "VEHICLE NOT FOUND!");
+            }
+            List<byte[]> confidentialFiles = vehicleService.getVehicleConfidentialFiles(vehicleId);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(baos);
+
+            for (int i = 0; i < confidentialFiles.size(); i++) {
+                ZipEntry entry = new ZipEntry("file" + (i + 1) + ".png");
+                entry.setSize(confidentialFiles.get(i).length);
+                zos.putNextEntry(entry);
+                zos.write(confidentialFiles.get(i));
+                zos.closeEntry();
+            }
+            zos.close();
+
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=lender_files.zip").body(baos.toByteArray());
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
 
     @GetMapping("/list-all-users/")
     @Transactional
@@ -123,20 +166,20 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/list-all-users/{username}/user-status-management")
+    @PostMapping("/list-all-users/{username}/user-status-management")
     @Transactional
     public ResponseEntity<Object> ManageUserStatuses(@PathVariable String username, @RequestBody StatusDTO StatusDTO) {
         try {
             User user = userService.getUserByUsername(username);
-            if(user == null){
+            if (user == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
             }
-            DataPool status = dataPoolService.getDataPoolById(StatusDTO.getStatusId());
-            if(status == null || !status.getEnumName().matches("UserStatus")){
+            DataPool newStatus = dataPoolService.getDataPoolById(StatusDTO.getStatusId());
+            if (newStatus == null || !newStatus.getEnumName().matches("UserStatus")) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
-            Set<Role> roles = new HashSet<>();
-            if(status.getEnumLabel().matches("BannedUser")){
+            if (newStatus.getEnumLabel().matches("BannedUser")) {
+                Set<Role> roles = new HashSet<>();
                 roles.add(Role.BANNED_USER);
                 user.setRoles(roles);
                 DataPool Lenderstatus = dataPoolService.findByEnumLabel("BannedLender");
@@ -144,36 +187,204 @@ public class AdminController {
                 lenderProfile.setStatus(Lenderstatus);
                 lenderService.save(lenderProfile);
                 DataPool renterStatus = dataPoolService.findByEnumLabel("BannedRenter");
-                Renter renterProfile= user.getRenterProfile();
+                Renter renterProfile = user.getRenterProfile();
                 renterProfile.setStatus(renterStatus);
                 renterService.save(renterProfile);
-                adminService.saverUser(user,username);
+                adminService.saverUser(user, username);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, RECORD_UPDATED);
             }
-            if(status.getEnumLabel().matches("VerifiedUser")){
-                roles.add(Role.USER);
-                user.setRoles(roles);
-                if(user.getLenderProfile()!=null) {
+            if (newStatus.getEnumLabel().matches("VerifiedUser")) {
+                Set<Role> userRoles = new HashSet<>();
+                userRoles.add(Role.USER);
+                user.setRoles(userRoles);
+                if (user.getLenderProfile() != null) {
                     DataPool Lenderstatus = dataPoolService.findByEnumLabel("unconfirmedLender");
                     Lender lenderProfile = user.getLenderProfile();
                     lenderProfile.setStatus(Lenderstatus);
                     lenderService.save(lenderProfile);
                 }
-                if(user.getRenterProfile()!=null) {
+                if (user.getRenterProfile() != null) {
                     DataPool renterStatus = dataPoolService.findByEnumLabel("unconfirmedRenter");
                     Renter renterProfile = user.getRenterProfile();
                     renterProfile.setStatus(renterStatus);
                     renterService.save(renterProfile);
                 }
-                adminService.saverUser(user,username);
+                adminService.saverUser(user, username);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, RECORD_UPDATED);
             }
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, RECORDS_RECEIVED);
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, "USER STATUS REMAINS THE SAME!");
+
         } catch (Exception e) {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
-    //---------------------------------------- ADMI STATUS ----------------------------------------------------------------------------
+
+    @PostMapping("/list-all-users/{username}/lender-status-management")
+    @Transactional
+    public ResponseEntity<Object> ManageLenderStatuses(@PathVariable String username, @RequestBody @Valid StatusDTO StatusDTO) {
+        try {
+            User user = userService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            if (user.getUserStatus().getEnumLabel().matches("unconfirmedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NEED TO BE VERIFIED FIRST!");
+            }
+            if (user.getUserStatus().getEnumLabel().matches("BannedUser") || user.getUserStatus().getEnumLabel().matches("BanAppealingUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER IS CURRENTLY BANNED!");
+            }
+            DataPool newStatus = dataPoolService.getDataPoolById(StatusDTO.getStatusId());
+            if (newStatus == null || !newStatus.getEnumName().matches("LenderStatus")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
+            }
+            Set<Role> activeRoles = user.getRoles();
+            if (newStatus.getEnumLabel().matches("VerifiedLender")) {
+                if (user.getLenderProfile() == null) {
+                    Lender lender = new Lender();
+                    lender.setStatus(newStatus);
+                    lender.setUser(user);
+                    lenderService.save(lender);
+                } else {
+                    Lender lender = user.getLenderProfile();
+                    lender.setStatus(newStatus);
+                    lender.setUser(user);
+                    lenderService.update(lender, lender.getId());
+
+                }
+                if (!activeRoles.contains(Role.LENDER)) {
+                    activeRoles.add(Role.LENDER);
+                    user.setRoles(activeRoles);
+                    adminService.saverUser(user, username);
+                }
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "USER LENDER PROFILE IS IN CONFIRMED STATUS!");
+            } else if (newStatus.getEnumLabel().matches("BannedLender")) {
+                if (user.getLenderProfile() == null) {
+                    Lender lender = new Lender();
+                    lender.setStatus(newStatus);
+                    lender.setUser(user);
+                    lenderService.save(lender);
+                } else {
+                    Lender lender = user.getLenderProfile();
+                    lender.setStatus(newStatus);
+                    lender.setUser(user);
+                    lenderService.update(lender, lender.getId());
+
+                }
+                if (activeRoles.contains(Role.LENDER)) {
+                    activeRoles.remove(Role.LENDER);
+                    user.setRoles(activeRoles);
+                    adminService.saverUser(user, username);
+                }
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "USER LENDER PROFILE IS IN BANNED STATUS!");
+            } else if (newStatus.getEnumLabel().matches("unconfirmedLender")) {
+                if (user.getLenderProfile() == null) {
+                    Lender lender = new Lender();
+                    lender.setStatus(newStatus);
+                    lender.setUser(user);
+                    lenderService.save(lender);
+                } else {
+                    Lender lender = user.getLenderProfile();
+                    lender.setStatus(newStatus);
+                    lender.setUser(user);
+                    lenderService.update(lender, lender.getId());
+
+                }
+                if (activeRoles.contains(Role.LENDER)) {
+                    activeRoles.remove(Role.LENDER);
+                    user.setRoles(activeRoles);
+                    adminService.saverUser(user, username);
+                }
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "LENDER STATUS IS NO LONGER BANNED BUT NEED RECONFIRMATION!");
+            } else {
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "LENDER STATUS REMAINS UNCHANGED!");
+            }
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
+    @PostMapping("/list-all-users/{username}/renter-status-management")
+    @Transactional
+    public ResponseEntity<Object> ManageRenterStatuses(@PathVariable String username, @RequestBody @Valid StatusDTO StatusDTO) {
+        try {
+            User user = userService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            if (user.getUserStatus().getEnumLabel().matches("unconfirmedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NEED TO BE VERIFIED FIRST!");
+            }
+            if (user.getUserStatus().getEnumLabel().matches("BannedUser") || user.getUserStatus().getEnumLabel().matches("BanAppealingUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER IS CURRENTLY BANNED!");
+            }
+            DataPool newStatus = dataPoolService.getDataPoolById(StatusDTO.getStatusId());
+            if (newStatus == null || !newStatus.getEnumName().matches("RenterStatus")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
+            }
+            Set<Role> activeRoles = user.getRoles();
+            if (newStatus.getEnumLabel().matches("VerifiedRenter")) {
+                if (user.getRenterProfile() == null) {
+                    Renter renter = new Renter();
+                    renter.setStatus(newStatus);
+                    renter.setUser(user);
+                    renterService.save(renter);
+                } else {
+                    Renter renter = user.getRenterProfile();
+                    renter.setStatus(newStatus);
+                    renter.setUser(user);
+                    renterService.update(renter, renter.getId());
+
+                }
+                if (!activeRoles.contains(Role.LENDER)) {
+                    activeRoles.add(Role.LENDER);
+                    user.setRoles(activeRoles);
+                    adminService.saverUser(user, username);
+                }
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "USER RENTER PROFILE IS IN CONFIRMED STATUS!");
+            } else if (newStatus.getEnumLabel().matches("BannedRenter")) {
+                if (user.getRenterProfile() == null) {
+                    Renter renter = new Renter();
+                    renter.setStatus(newStatus);
+                    renter.setUser(user);
+                    renterService.save(renter);
+                } else {
+                    Renter renter = user.getRenterProfile();
+                    renter.setStatus(newStatus);
+                    renter.setUser(user);
+                    renterService.update(renter, renter.getId());
+
+                }
+                if (activeRoles.contains(Role.LENDER)) {
+                    activeRoles.remove(Role.LENDER);
+                    user.setRoles(activeRoles);
+                    adminService.saverUser(user, username);
+                }
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "USER RENTER PROFILE IS IN BANNED STATUS!");
+            } else if (newStatus.getEnumLabel().matches("unconfirmedRenter")) {
+                if (user.getRenterProfile() == null) {
+                    Renter renter = new Renter();
+                    renter.setStatus(newStatus);
+                    renter.setUser(user);
+                    renterService.save(renter);
+                } else {
+                    Renter renter = user.getRenterProfile();
+                    renter.setStatus(newStatus);
+                    renter.setUser(user);
+                    renterService.update(renter, renter.getId());
+
+                }
+                if (activeRoles.contains(Role.LENDER)) {
+                    activeRoles.remove(Role.LENDER);
+                    user.setRoles(activeRoles);
+                    adminService.saverUser(user, username);
+                }
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "RENTER STATUS IS NO LONGER BANNED BUT NEED RECONFIRMATION!");
+            } else {
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "RENTER STATUS REMAINS UNCHANGED!");
+            }
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
 
 
 }

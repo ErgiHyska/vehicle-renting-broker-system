@@ -37,21 +37,6 @@ public class RenterController {
     private final VehicleReviewService vehicleReviewService;
     private final StorageService storageService;
 
-    @PostMapping("/create")
-    public ResponseEntity<Object> create(@RequestBody @Valid RenterDTO renterDTO) {
-        try {
-            Renter renter = modelMapper.map(renterDTO, Renter.class);
-
-            renter.setStatus(dataPoolService.getDataPoolById(1l));
-            renterService.save(renter);
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, renter, RECORD_CREATED);
-        } catch (Exception e) {
-            log.error(ERROR_OCCURRED, e.getMessage());
-            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
-
-        }
-    }
-
     @GetMapping("/{renterId}")
     public ResponseEntity<Object> get(@PathVariable Long renterId) {
         try {

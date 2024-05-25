@@ -18,5 +18,14 @@ public class BannedUsersAppealingService {
    public List<BannedUsersAppealing> list(){
        return  repository.findAll();
    }
+   public BannedUsersAppealing updateAppeal(BannedUsersAppealing bannedUsersAppealing,Long id){
+       bannedUsersAppealing.setId(id);
+       return repository.saveAndFlush(bannedUsersAppealing);
+   }
+    public BannedUsersAppealing saveAppeal(BannedUsersAppealing bannedUsersAppealing){
+        return repository.save(bannedUsersAppealing);
+    }
+
+
 
 }

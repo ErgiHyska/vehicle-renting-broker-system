@@ -3,10 +3,13 @@ package com.vehicool.vehicool.business.service;
 import com.querydsl.core.types.Predicate;
 import com.vehicool.vehicool.business.querydsl.VehicleFilter;
 import com.vehicool.vehicool.business.querydsl.VehicleQueryDsl;
+import com.vehicool.vehicool.persistence.entity.ConfidentialFile;
 import com.vehicool.vehicool.persistence.entity.FileData;
 import com.vehicool.vehicool.persistence.entity.Vehicle;
 import com.vehicool.vehicool.persistence.repository.SystemStorageRepository;
 import com.vehicool.vehicool.persistence.repository.VehicleRepository;
+import com.vehicool.vehicool.security.user.User;
+import com.vehicool.vehicool.util.fileconfigs.ImageUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -81,6 +84,19 @@ public class VehicleService {
             byte[] image = Files.readAllBytes(new File(filePath).toPath());
         }
         return images;
+    }
+    public List<byte[]> getVehicleConfidentialFiles(Long vehicleId) {
+        Vehicle vehicle = getVehicleById(vehicleId);
+        if (vehicle == null) {
+            return null;
+        }
+        List<byte[]> confidentialFiles = new ArrayList<>();
+        List<ConfidentialFile> vehicleConfidentialFiles=vehicle.getVehicleRegistrations();
+        for(ConfidentialFile currentFile:vehicleConfidentialFiles){
+            byte[] image = ImageUtils.decompressImage(currentFile.getImageData());
+            confidentialFiles.add(image);
+        }
+        return confidentialFiles;
     }
 
 
