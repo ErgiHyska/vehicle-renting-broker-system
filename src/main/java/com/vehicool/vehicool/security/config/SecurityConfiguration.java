@@ -25,7 +25,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration {
 
     private static final String[] WHITE_LIST_URL = {
-            "/swagger-ui/**","/vehicle/**",
+            "/swagger-ui/**","/vehicle/**","/swagger-resources/**","/v3/api-docs/**",
             "/auth/**"};
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;

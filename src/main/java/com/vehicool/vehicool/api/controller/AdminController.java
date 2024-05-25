@@ -116,9 +116,9 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/list-all-users/")
+    @GetMapping("/list-all-users")
     @Transactional
-    public ResponseEntity<Object> listUsers(@PathVariable String username) {
+    public ResponseEntity<Object> listUsers() {
         try {
             List<User> users = userService.getAllUsers();
 
