@@ -59,6 +59,9 @@ public class VehicleService {
         }
         List<FileData> fileDataList = new ArrayList<>();
         for (MultipartFile file : files) {
+            if (file == null || file.getContentType().equals("image")) {
+                continue;
+            }
             String filePath = FOLDER_PATH + file.getOriginalFilename();
             fileDataList.add(FileData.builder().name(file.getOriginalFilename()).vehicle(vehicle).type(file.getContentType()).filePath(filePath).build());
             file.transferTo(new File(filePath));
@@ -84,19 +87,6 @@ public class VehicleService {
             byte[] image = Files.readAllBytes(new File(filePath).toPath());
         }
         return images;
-    }
-    public List<byte[]> getVehicleConfidentialFiles(Long vehicleId) {
-        Vehicle vehicle = getVehicleById(vehicleId);
-        if (vehicle == null) {
-            return null;
-        }
-        List<byte[]> confidentialFiles = new ArrayList<>();
-        List<ConfidentialFile> vehicleConfidentialFiles=vehicle.getVehicleRegistrations();
-        for(ConfidentialFile currentFile:vehicleConfidentialFiles){
-            byte[] image = ImageUtils.decompressImage(currentFile.getImageData());
-            confidentialFiles.add(image);
-        }
-        return confidentialFiles;
     }
 
 

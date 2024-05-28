@@ -1,6 +1,5 @@
 package com.vehicool.vehicool.api.controller;
 
-import com.vehicool.vehicool.api.dto.VehicleDTO;
 import com.vehicool.vehicool.business.querydsl.VehicleFilter;
 import com.vehicool.vehicool.business.service.DataPoolService;
 import com.vehicool.vehicool.business.service.StorageService;
@@ -18,16 +17,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
 @Slf4j
@@ -63,8 +61,9 @@ public class VehicleController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+
     @GetMapping("/get/{id}")
-    public ResponseEntity<Object> get(@PathVariable Long id)  {
+    public ResponseEntity<Object> get(@PathVariable Long id) {
         try {
             Vehicle vehicle = vehicleService.getVehicleById(id);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, RECORD_CREATED);
@@ -74,22 +73,23 @@ public class VehicleController {
 
         }
     }
-//    @GetMapping("/{id}/images")
+
+    //    @GetMapping("/{id}/images")
 //    public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable Long id) throws IOException {
 //        List<byte[]> images = vehicleService.downloadVehiclePicturesById(id);
 //        return ResponseEntity.status(HttpStatus.OK)
 //                .contentType(MediaType.valueOf("image/png")).body(images.get(0));
 //    }
-@GetMapping("/{vehicleId}/images")
-public ResponseEntity<List<byte[]>> getVehicleImages(@PathVariable Long vehicleId) {
-    try {
-        List<byte[]> images = vehicleService.downloadImageFromFileSystem(vehicleId);
-        if (images == null || images.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/{vehicleId}/images")
+    public ResponseEntity<List<byte[]>> getVehicleImages(@PathVariable Long vehicleId) {
+        try {
+            List<byte[]> images = vehicleService.downloadImageFromFileSystem(vehicleId);
+            if (images == null || images.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(images, new HttpHeaders(), HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(images, new HttpHeaders(), HttpStatus.OK);
-    } catch (IOException e) {
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
-}
 }
