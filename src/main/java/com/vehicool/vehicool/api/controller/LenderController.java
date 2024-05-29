@@ -1,8 +1,13 @@
 package com.vehicool.vehicool.api.controller;
 
-import com.vehicool.vehicool.api.dto.*;
+import com.vehicool.vehicool.api.dto.RenterReviewDTO;
+import com.vehicool.vehicool.api.dto.StatusDTO;
+import com.vehicool.vehicool.api.dto.VehicleCommercialDTO;
+import com.vehicool.vehicool.api.dto.VehicleDTO;
 import com.vehicool.vehicool.business.service.*;
 import com.vehicool.vehicool.persistence.entity.*;
+import com.vehicool.vehicool.security.user.User;
+import com.vehicool.vehicool.security.user.UserRepository;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import java.security.Principal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
-
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
 @Slf4j
@@ -30,68 +38,25 @@ import static com.vehicool.vehicool.util.constants.Messages.*;
 public class LenderController {
     private final ModelMapper modelMapper;
     private final LenderService lenderService;
-   private final DataPoolService dataPoolService;
+    private final DataPoolService dataPoolService;
     private final VehicleService vehicleService;
     private final VehicleCommerceService vehicleCommerceService;
     private final ContractService contractService;
     private final RenterReviewService renterReviewService;
     private final StorageService storageService;
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-
-    @PutMapping("/{lenderId}/update")
-    public ResponseEntity<Object> update(@RequestBody @Valid LenderDTO lenderDTO, @PathVariable Long lenderId) {
-        try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
-            }
-            lender = modelMapper.map(lenderDTO, Lender.class);
-            lenderService.update(lender, lenderId);
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, lender, RECORD_CREATED);
-        } catch (Exception e) {
-            log.error(ERROR_OCCURRED, e.getMessage());
-            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
-
-        }
-    }
-
-    @GetMapping("/{lenderId}")
-    public ResponseEntity<Object> get(@PathVariable Long lenderId) {
-        try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
-            }
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, lender, RECORD_CREATED);
-        } catch (Exception e) {
-            log.error(ERROR_OCCURRED, e.getMessage());
-            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
-
-        }
-    }
-
-    @DeleteMapping("/{lenderId}/delete")
-    public ResponseEntity<Object> delete(@PathVariable Long lenderId) {
-        try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
-            }
-            lenderService.delete(lenderId);
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, "Lender deleted successfuly !");
-        } catch (Exception e) {
-            log.error(ERROR_OCCURRED, e.getMessage());
-            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
-
-        }
-    }
-
-    @PostMapping("/{lenderId}/lender-vehicles/{vehicleId}/set-commercial-data")
+    @PostMapping("/lender-vehicles/{vehicleId}/set-commercial-data")
     @Transactional
-    public ResponseEntity<Object> changeVehicleCommercialDetails(@PathVariable Long lenderId, @PathVariable Long vehicleId, @RequestBody VehicleCommercialDTO vehicleCommercialDTO) {
+    public ResponseEntity<Object> changeVehicleCommercialDetails(Principal connectedUser, @PathVariable Long vehicleId, @RequestBody VehicleCommercialDTO vehicleCommercialDTO) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
@@ -120,15 +85,20 @@ public class LenderController {
         }
     }
 
-    @GetMapping("/{lenderId}/active-contract-requests")
+    @GetMapping("/active-contract-requests")
     @Transactional
-    public ResponseEntity<Object> listContractRequests(@PathVariable Long lenderId) {
+    public ResponseEntity<Object> listContractRequests(Principal connectedUser) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
             if (lender == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
             }
-            List<Contract> contracts = lenderService.contractRequests(lenderId, 17l);
+            DataPool contractStatus = dataPoolService.findByEnumLabel("Waiting");
+            List<Contract> contracts = lenderService.contractRequests(lender.getId(), contractStatus.getId());
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contracts, RECORDS_RECEIVED);
         } catch (PropertyReferenceException e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -139,20 +109,24 @@ public class LenderController {
         }
     }
 
-    @PostMapping("/{lenderId}/active-contract-requests/{contractId}/proceed")
+    @PostMapping("/active-contract-requests/{contractId}/proceed")
     @Transactional
-    public ResponseEntity<Object> proceedContractRequests(@PathVariable Long lenderId, @PathVariable Long contractId, @RequestBody StatusDTO statusDTO) {
+    public ResponseEntity<Object> proceedContractRequests(Principal connectedUser, @PathVariable Long contractId, @RequestBody StatusDTO statusDTO) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Contract contract = contractService.getContractById(contractId);
             if (contract == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Contract request not found !");
             }
             DataPool status = dataPoolService.getDataPoolById(statusDTO.getStatusId());
-            if (status == null) {
+            if (status == null || !status.getEnumName().matches("ContractualStatus")) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Status not found !");
             }
             if (!lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
@@ -160,6 +134,22 @@ public class LenderController {
             }
             contract.setContractualStatus(status);
             contractService.update(contract, contractId);
+
+            //Create notification object for the renter
+            Notification notification = new Notification();
+            notification.setCorresponingUser(contract.getRenter().getUser());
+            notification.setIsRead(false);
+            LocalDateTime localDateTime = LocalDateTime.now();
+            ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+            Instant instant = zonedDateTime.toInstant();
+            notification.setDateReceived(Date.from(instant));
+            if (status.getEnumLabel().matches("Accepted")) {
+                notification.setMessage(lender.getUser().getFirstname() + " " + lender.getUser().getLastname() + " has accepted your renting request for his " + contract.getVehicle().getBrand() + " " + contract.getVehicle().getModel());
+            } else {
+                notification.setMessage(lender.getUser().getFirstname() + " " + lender.getUser().getLastname() + " has refused your renting request for his " + contract.getVehicle().getBrand() + " " + contract.getVehicle().getModel());
+            }
+            notificationService.save(notification);
+
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, "Contract status updated !");
         } catch (PropertyReferenceException e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -170,13 +160,17 @@ public class LenderController {
         }
     }
 
-    @GetMapping("/{lenderId}/active-contract-requests/{contractId}")
+    @GetMapping("/active-contract-requests/{contractId}")
     @Transactional
-    public ResponseEntity<Object> viewContractRequest(@PathVariable Long lenderId, @PathVariable Long contractId, @RequestBody StatusDTO statusDTO) {
+    public ResponseEntity<Object> viewContractRequest(Principal connectedUser, @PathVariable Long contractId, @RequestBody StatusDTO statusDTO) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
             if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Contract contract = contractService.getContractById(contractId);
             if (contract == null) {
@@ -193,13 +187,17 @@ public class LenderController {
         }
     }
 
-    @GetMapping("/{lenderId}/lender-vehicles")
+    @GetMapping("/lender-vehicles")
     @Transactional
-    public ResponseEntity<Object> listVehicles(@PathVariable Long lenderId) {
+    public ResponseEntity<Object> listVehicles(Principal connectedUser) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
             if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, lender.getVehicles(), RECORDS_RECEIVED);
         } catch (PropertyReferenceException e) {
@@ -211,16 +209,17 @@ public class LenderController {
         }
     }
 
-    @PostMapping("/{lenderId}/post-a-vehicle")
+    @PostMapping("/post-a-vehicle")
     @Transactional
-    public ResponseEntity<Object> createVehicle(@PathVariable Long lenderId, @RequestBody @Valid VehicleDTO vehicleDTO) {
+    public ResponseEntity<Object> createVehicle(Principal connectedUser, @RequestBody @Valid VehicleDTO vehicleDTO) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
             }
-            if (!lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender is not verified !");
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED + " RELATED TO LENDER PROFILE!");
             }
             DataPool locaton = dataPoolService.getDataPoolById(vehicleDTO.getCityId());
             if (locaton == null && locaton.getEnumName().matches("location")) {
@@ -240,17 +239,23 @@ public class LenderController {
         }
     }
 
-    @DeleteMapping("/{lenderId}/lender-vehicles/{vehicleId}/delete-vehicle")
+    @DeleteMapping("/lender-vehicles/{vehicleId}/delete-vehicle")
     @Transactional
-    public ResponseEntity<Object> deleteVehicle(@PathVariable Long lenderId, @PathVariable Long vehicleId) {
+    public ResponseEntity<Object> deleteVehicle(Principal connectedUser, @PathVariable Long vehicleId) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
             if (vehicle != null) {
-                vehicleService.delete(vehicleId);
+                DataPool status = dataPoolService.findByEnumLabel("UserRemovedVehicle");
+                vehicle.setStatus(status);
+                vehicleService.update(vehicle, vehicleId);
             }
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, "Vehicle deleted successfuly !");
         } catch (Exception e) {
@@ -261,13 +266,17 @@ public class LenderController {
         }
     }
 
-    @PutMapping("/{lenderId}/lender-vehicles/{vehicleId}/update-vehicle")
+    @PutMapping("/lender-vehicles/{vehicleId}/update-vehicle")
     @Transactional
-    public ResponseEntity<Object> updateVehicle(@PathVariable Long lenderId, @PathVariable Long vehicleId, @RequestBody @Valid VehicleDTO vehicleDTO) {
+    public ResponseEntity<Object> updateVehicle(Principal connectedUser, @PathVariable Long vehicleId, @RequestBody @Valid VehicleDTO vehicleDTO) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
             if (vehicle == null) {
@@ -283,12 +292,16 @@ public class LenderController {
         }
     }
 
-    @GetMapping("/{lenderId}/contract-history")
-    public ResponseEntity<Object> getContractsHistory(@PathVariable Long lenderId) {
+    @GetMapping("/contract-history")
+    public ResponseEntity<Object> getContractsHistory(Principal connectedUser) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ENTITY_NOT_FOUND);
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             List<Contract> contracts = lender.getContractSigned();
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, contracts, RECORDS_RECEIVED);
@@ -299,12 +312,16 @@ public class LenderController {
         }
     }
 
-    @GetMapping("/{lenderId}/contract-history/{contractId}")
-    public ResponseEntity<Object> getContract(@PathVariable Long lenderId, @PathVariable Long contractId) {
+    @GetMapping("/contract-history/{contractId}")
+    public ResponseEntity<Object> getContract(Principal connectedUser, @PathVariable Long contractId) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found!");
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Contract contract = contractService.getContractById(contractId);
             if (contract == null) {
@@ -318,12 +335,16 @@ public class LenderController {
         }
     }
 
-    @PostMapping("/{lenderId}/contract-history/{contractId}/review-renter")
-    public ResponseEntity<Object> reviewRenter(@PathVariable Long lenderId, @PathVariable Long contractId, @RequestBody RenterReviewDTO renterReviewDTO) {
+    @PostMapping("/contract-history/{contractId}/review-renter")
+    public ResponseEntity<Object> reviewRenter(Principal connectedUser, @PathVariable Long contractId, @RequestBody RenterReviewDTO renterReviewDTO) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found!");
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Contract contract = contractService.getContractById(contractId);
             if (contract == null) {
@@ -334,6 +355,16 @@ public class LenderController {
             renterReview.setRenter(renter);
             renterReview.setLender(lender);
             renterReviewService.save(renterReview);
+            //Create notification object for the renter
+            Notification notification = new Notification();
+            notification.setMessage("A user has reviewed you of " + renterReview.getRating() + "/5");
+            notification.setCorresponingUser(contract.getLender().getUser());
+            notification.setIsRead(false);
+            LocalDateTime localDateTime = LocalDateTime.now();
+            ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+            Instant instant = zonedDateTime.toInstant();
+            notification.setDateReceived(Date.from(instant));
+            notificationService.save(notification);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, renterReview, RECORDS_RECEIVED);
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -342,13 +373,17 @@ public class LenderController {
         }
     }
 
-    @PostMapping(value = "/{lenderId}/lender-vehicles/{vehicleId}/upload-vehicle-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/lender-vehicles/{vehicleId}/upload-vehicle-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> uploadVehicleImages(@RequestParam("image") List<MultipartFile> files, @PathVariable Long lenderId, @PathVariable Long vehicleId) {
+    public ResponseEntity<Object> uploadVehicleImages(@RequestParam("image") List<MultipartFile> files, Principal connectedUser, @PathVariable Long vehicleId) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
             if (vehicle == null) {
@@ -364,13 +399,17 @@ public class LenderController {
         }
     }
 
-    @GetMapping(value = "/{lenderId}/lender-vehicles/{vehicleId}/imagesIds")
+    @GetMapping(value = "/lender-vehicles/{vehicleId}/imagesIds")
     @Transactional
-    public ResponseEntity<Object> vehicleImagesIds(@PathVariable Long lenderId, @PathVariable Long vehicleId) {
+    public ResponseEntity<Object> vehicleImagesIds(Principal connectedUser, @PathVariable Long vehicleId) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
             if (vehicle == null) {
@@ -383,13 +422,18 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
-    @DeleteMapping(value = "/{lenderId}/lender-vehicles/{vehicleId}/deleteImage/{imageId}")
+
+    @DeleteMapping(value = "/lender-vehicles/{vehicleId}/deleteImage/{imageId}")
     @Transactional
-    public ResponseEntity<Object> vehicleImagesIds(@PathVariable Long lenderId, @PathVariable Long vehicleId,@PathVariable Long imageId) {
+    public ResponseEntity<Object> vehicleImagesIds(Principal connectedUser, @PathVariable Long vehicleId, @PathVariable Long imageId) {
         try {
-            Lender lender = lenderService.getLenderById(lenderId);
-            if (lender == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Lender not found !");
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
             if (vehicle == null) {

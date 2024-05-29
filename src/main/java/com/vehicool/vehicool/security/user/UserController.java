@@ -114,17 +114,16 @@ public class UserController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
         }
     }
-
-//    @GetMapping("/notifications")
-//    public ResponseEntity<?> notifications(Principal connectedUser) {
-//        try {
-//            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
-//            if (user == null) {
-//                return ResponseMapper.map(SUCCESS, HttpStatus.OK, user.getNotifications(), RECORDS_RECEIVED);
-//            }
-//            return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
-//        } catch (Exception e) {
-//            return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
-//        }
-//    }
+    @GetMapping("/notifications")
+    public ResponseEntity<?> notifications(Principal connectedUser) {
+        try {
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, user.getNotifications(), RECORDS_RECEIVED);
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
+        }
+    }
 }

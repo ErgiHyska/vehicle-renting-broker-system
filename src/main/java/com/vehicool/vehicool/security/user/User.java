@@ -75,6 +75,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy ="user")
     private List<ConfidentialFile> confidentialFiles;
 
+    @OneToMany(mappedBy ="corresponingUser")
+    private List<Notification> notifications;
+
     @OneToOne
     @JsonBackReference
     @JoinColumn(name = "administrator_profile_id")

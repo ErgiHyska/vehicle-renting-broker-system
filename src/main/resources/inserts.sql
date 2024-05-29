@@ -17,6 +17,7 @@ INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'VehicleStatus', 'u
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'VehicleStatus', 'VerifiedVehicle');
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'VehicleStatus', 'BannedVehicle');
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'VehicleStatus', 'BanAppealingVehicle');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'VehicleStatus', 'UserRemovedVehicle');
 
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'ContractualStatus', 'Accepted');
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'ContractualStatus', 'Rejected');

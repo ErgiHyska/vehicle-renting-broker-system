@@ -43,6 +43,9 @@ public class Vehicle {
     @Column(name="no_of_seats",nullable = false)
     private Long noOfSeats;
 
+    @Column(name="plate_number",nullable = false)
+    private String plateNo;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "status")
     private DataPool status;

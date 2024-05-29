@@ -51,7 +51,7 @@ public class VehicleQueryDsl implements QueryDsl<VehicleFilter> {
         if (filter.getLocationId()!=null) {
             query.and(qVehicle.location.id.eq(filter.getLocationId()));
         }
-
+        query.and(qVehicle.status.enumLabel.matches("VerifiedVehicle"));
         return query;
     }
 }

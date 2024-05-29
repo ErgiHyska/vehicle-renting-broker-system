@@ -6,6 +6,7 @@ import com.vehicool.vehicool.business.querydsl.VehicleQueryDsl;
 import com.vehicool.vehicool.persistence.entity.ConfidentialFile;
 import com.vehicool.vehicool.persistence.entity.FileData;
 import com.vehicool.vehicool.persistence.entity.Vehicle;
+import com.vehicool.vehicool.persistence.repository.DatabaseStorageRepository;
 import com.vehicool.vehicool.persistence.repository.SystemStorageRepository;
 import com.vehicool.vehicool.persistence.repository.VehicleRepository;
 import com.vehicool.vehicool.security.user.User;
@@ -14,11 +15,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +31,7 @@ public class VehicleService {
     private final VehicleRepository vehicleRepository;
     private final SystemStorageRepository systemStorageRepository;
     private final VehicleQueryDsl vehicleQueryDsl;
+    private final DatabaseStorageRepository databaseStorageRepository;
     private final String FOLDER_PATH = "C:\\Users\\ergih\\Desktop\\fileStorage\\";
 
     public Vehicle getVehicleById(Long id) {
@@ -87,6 +91,39 @@ public class VehicleService {
             byte[] image = Files.readAllBytes(new File(filePath).toPath());
         }
         return images;
+    }
+
+    public List<byte[]> getVehicleConfidentialFiles(Long vehicleId) {
+        Vehicle vehicle = getVehicleById(vehicleId);
+        if (vehicle == null) {
+            return null;
+        }
+        List<byte[]> images = new ArrayList<>();
+        List<ConfidentialFile> vehicleRegistrations = vehicle.getVehicleRegistrations();
+        for(ConfidentialFile currentFile:vehicleRegistrations){
+            byte[] image = ImageUtils.decompressImage(currentFile.getImageData());
+            images.add(image);
+        }
+        return images;
+    }
+
+    @Transactional
+    public String uploadRenterConfidentialFile(List<MultipartFile> file, Long vehicleId) throws IOException {
+
+        Vehicle vehicle = getVehicleById(vehicleId);
+        if (vehicle == null) {
+            return "Vehicle not found !";
+        }
+        List<ConfidentialFile> list = new ArrayList<>();
+        for(MultipartFile current:file){
+            ConfidentialFile confidentialFile =ConfidentialFile.builder().name(current.getOriginalFilename()).type(current.getContentType()).vehicle(vehicle).imageData(ImageUtils.compressImage(current.getBytes())).build();
+            list.add(confidentialFile);
+        }
+        databaseStorageRepository.saveAll(list);
+        if (!list.isEmpty()) {
+            return "file uploaded successfully !";
+        }
+        return null;
     }
 
 
