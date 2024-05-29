@@ -15,6 +15,13 @@ public class NotificationService {
     public Notification save(Notification notification) {
         return notificationRepository.save(notification);
     }
+    public Notification getById(Long id) {
+        return notificationRepository.findById(id).orElse(null);
+    }
+    public Notification update(Notification notification,Long id) {
+        notification.setId(id);
+        return notificationRepository.saveAndFlush(notification);
+    }
 
     public void delete(Notification notification) {
         notificationRepository.delete(notification);

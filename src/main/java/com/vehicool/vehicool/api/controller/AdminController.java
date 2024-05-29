@@ -307,6 +307,24 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
+    @PostMapping("/list-all-vehicles/{vehicleId}/vehicle-status-management")
+    @Transactional
+    public ResponseEntity<Object> ManageVehicleStatuses(@PathVariable Long vehicleId, @RequestBody @Valid StatusDTO StatusDTO) {
+        try {
+            DataPool newStatus = dataPoolService.getDataPoolById(StatusDTO.getStatusId());
+            if (newStatus == null || !newStatus.getEnumName().matches("VehicleStatus")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
+            }
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            if(vehicle == null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found!");
+            }
+            vehicle.setStatus(newStatus);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, newStatus.getEnumLabel(), "Vehicle status set!");
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
     @PostMapping("/list-all-users/{username}/renter-status-management")
     @Transactional
     public ResponseEntity<Object> ManageRenterStatuses(@PathVariable String username, @RequestBody @Valid StatusDTO StatusDTO) {

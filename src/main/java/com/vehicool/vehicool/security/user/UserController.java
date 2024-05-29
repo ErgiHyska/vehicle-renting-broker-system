@@ -1,12 +1,10 @@
 package com.vehicool.vehicool.security.user;
 
 import com.vehicool.vehicool.api.dto.AppealDTO;
-import com.vehicool.vehicool.business.service.DataPoolService;
-import com.vehicool.vehicool.business.service.LenderService;
-import com.vehicool.vehicool.business.service.RenterService;
-import com.vehicool.vehicool.business.service.StorageService;
+import com.vehicool.vehicool.business.service.*;
 import com.vehicool.vehicool.persistence.entity.BannedUsersAppealing;
 import com.vehicool.vehicool.persistence.entity.Lender;
+import com.vehicool.vehicool.persistence.entity.Notification;
 import com.vehicool.vehicool.persistence.entity.Renter;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
 import jakarta.validation.Valid;
@@ -30,6 +28,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final RenterService renterService;
     private final LenderService lenderService;
+    private final NotificationService notificationService;
     private final StorageService storageService;
 
     @PatchMapping("change-password")
@@ -122,6 +121,21 @@ public class UserController {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
             }
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, user.getNotifications(), RECORDS_RECEIVED);
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
+        }
+    }
+    @GetMapping("/notifications/{notificationId}")
+    public ResponseEntity<?> notificationById(Principal connectedUser,@PathVariable Long notificationId) {
+        try {
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Notification notification = notificationService.getById(notificationId);
+            notification.setIsRead(true);
+            notificationService.update(notification,notificationId);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, notification, RECORDS_RECEIVED);
         } catch (Exception e) {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
         }
