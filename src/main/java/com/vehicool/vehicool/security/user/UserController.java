@@ -21,7 +21,7 @@ import java.util.List;
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -33,7 +33,7 @@ public class UserController {
     private final NotificationService notificationService;
     private final StorageService storageService;
 
-    @PatchMapping("change-password")
+    @PatchMapping("/change-password")
     public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordRequest request, Principal connectedUser) {
         service.changePassword(request, connectedUser);
