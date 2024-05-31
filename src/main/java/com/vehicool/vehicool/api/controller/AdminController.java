@@ -128,11 +128,11 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/list-all-users/{username}/user-data")
+    @GetMapping("/list-all-users/{userId}/user-data")
     @Transactional
-    public ResponseEntity<Object> getUserData(@PathVariable String username) {
+    public ResponseEntity<Object> getUserData(@PathVariable Long userId) {
         try {
-            User user = userService.getUserByUsername(username);
+            User user = userService.getUserById(userId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, RECORDS_RECEIVED);
         } catch (Exception e) {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
