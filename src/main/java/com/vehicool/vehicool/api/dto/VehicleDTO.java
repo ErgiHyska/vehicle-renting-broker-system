@@ -13,20 +13,23 @@ public class VehicleDTO {
     @NotNull(message = "Color is required!")
     private String color;
 
-    @NotNull(message = "Type is required!")
-    private String type;
-
     @NotNull(message = "Brand is required!")
     private String Brand;
 
     @NotNull(message = "Model is required!")
     private String model;
 
-    @NotNull(message = "Transmission Type is required!")
-    private String transmissionType;
+    @NotNull(message = "PlateNo is required!")
+    private String plateNo;
 
-    @NotNull(message = "Engine Type is required!")
-    private String engineType;
+    @NotNull(message = "Vehicle type Id is required!")
+    private Long vehicleTypeId;
+
+    @NotNull(message = "Transmission Type Id is required!")
+    private Long transmissionTypeId;
+
+    @NotNull(message = "Engine Type Id is required!")
+    private Long engineTypeId;
 
     @NotNull(message = "Vat ID is required!")
     private Double engineSize;

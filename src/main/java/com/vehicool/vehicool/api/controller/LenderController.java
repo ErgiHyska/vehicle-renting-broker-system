@@ -222,14 +222,31 @@ public class LenderController {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED + " RELATED TO LENDER PROFILE!");
             }
             DataPool locaton = dataPoolService.getDataPoolById(vehicleDTO.getCityId());
-            if (locaton == null && locaton.getEnumName().matches("location")) {
+            if (locaton == null || !locaton.getEnumName().matches("location")) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Location not found/exists !");
+            }
+            DataPool transmission = dataPoolService.getDataPoolById(vehicleDTO.getTransmissionTypeId());
+            if (transmission == null || !transmission.getEnumName().matches("transmissionType")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Transmission type not found/exists !");
+            }
+            DataPool vehicleType = dataPoolService.getDataPoolById(vehicleDTO.getVehicleTypeId());
+            if (vehicleType == null || !vehicleType.getEnumName().matches("vehicleType")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle type type not found/exists !");
+            }
+
+            DataPool engineType = dataPoolService.getDataPoolById(vehicleDTO.getEngineTypeId());
+            if (engineType == null || !engineType.getEnumName().matches("engineType")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Engine type type not found/exists !");
             }
             Vehicle vehicle = modelMapper.map(vehicleDTO, Vehicle.class);
             vehicle.setLender(lender);
+            vehicle.setPlateNo(vehicleDTO.getPlateNo());
             vehicle.setLocation(locaton);
+            vehicle.setEngineType(engineType);
+            vehicle.setVehicleType(vehicleType);
+            vehicle.setTransmissionType(transmission);
             vehicle.setAvailable(false);
-            vehicle.setStatus(dataPoolService.getDataPoolById(1l));
+            vehicle.setStatus(dataPoolService.findByEnumLabel("unconfirmedVehicle"));
             vehicleService.save(vehicle);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, RECORD_CREATED);
         } catch (Exception e) {

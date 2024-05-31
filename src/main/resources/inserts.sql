@@ -38,3 +38,15 @@ INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'location', 'Sarand
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'location', 'Diber');
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'location', 'Elbasan');
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'location', 'Librazhd');
+
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'transmissionType', 'Automatic');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'transmissionType', 'Manual');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'transmissionType', 'Semi-Automatic');
+
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'engineType', 'Gasoline');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'engineType', 'Diesel');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'engineType', 'Electro/Hybrid');
+
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'vehicleType', 'Cars');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'vehicleType', 'Vans&Trucks');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'vehicleType', 'Motorcycles');

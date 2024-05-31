@@ -16,26 +16,18 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @Column(name="vin",nullable = false)
     private String vin;
 
     @Column(name="color",nullable = false)
     private String color;
 
-    @Column(name="vehicle_type",nullable = false)
-    private String type;
-
     @Column(name="brand",nullable = false)
     private String Brand;
 
     @Column(name="model",nullable = false)
     private String model;
-
-    @Column(name="transmission_type",nullable = false)
-    private String transmissionType;
-
-    @Column(name="engine_type",nullable = false)
-    private String engineType;
 
     @Column(name="engine_size",nullable = false)
     private Double engineSize;
@@ -76,4 +68,17 @@ public class Vehicle {
 
     @OneToOne(mappedBy ="vehicle")
     private VehicleCommerce vehicleCommerce;
+
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "transmission_type")
+    private DataPool transmissionType;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "engine_type")
+    private DataPool engineType;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "vehicle_type")
+    private DataPool vehicleType;
 }

@@ -67,11 +67,12 @@ public class VehicoolApplication {
             roles.add(Role.USER);
             user.setRoles(roles);
             user.setUserStatus(dataPoolService.findByEnumLabel("VerifiedUser"));
-            administratorService.saverUser(user, user.getUsername());
             Lender lender = new Lender();
             lender.setUser(user);
             lender.setStatus(dataPoolService.findByEnumLabel("VerifiedLender"));
             lenderService.save(lender);
+            user.setLenderProfile(lender);
+            administratorService.saverUser(user, user.getUsername());
         }
         if (userService.getUserByUsername("renter") == null) {
             authenticationService.register(new RegisterRequest("renter", "renter", "renter", "renter@renter.com", "12345678"));
@@ -81,11 +82,12 @@ public class VehicoolApplication {
             roles.add(Role.USER);
             user.setRoles(roles);
             user.setUserStatus(dataPoolService.findByEnumLabel("VerifiedUser"));
-            administratorService.saverUser(user, user.getUsername());
             Renter renter = new Renter();
             renter.setStatus(dataPoolService.findByEnumLabel("VerifiedRenter"));
             renter.setUser(user);
             renterService.save(renter);
+            user.setRenterProfile(renter);
+            administratorService.saverUser(user, user.getUsername());
         }
         return "ACCOUNTS CREATED";
     }
