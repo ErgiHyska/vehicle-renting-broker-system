@@ -1,11 +1,9 @@
 package com.vehicool.vehicool;
 
-import com.vehicool.vehicool.business.service.AdministratorService;
-import com.vehicool.vehicool.business.service.DataPoolService;
-import com.vehicool.vehicool.business.service.LenderService;
-import com.vehicool.vehicool.business.service.RenterService;
+import com.vehicool.vehicool.business.service.*;
 import com.vehicool.vehicool.persistence.entity.Lender;
 import com.vehicool.vehicool.persistence.entity.Renter;
+import com.vehicool.vehicool.persistence.entity.Vehicle;
 import com.vehicool.vehicool.security.auth.AuthenticationService;
 import com.vehicool.vehicool.security.auth.RegisterRequest;
 import com.vehicool.vehicool.security.user.Role;
@@ -34,6 +32,7 @@ public class VehicoolApplication {
     private final AdministratorService administratorService;
     private final JdbcTemplate jdbcTemplate;
     private final DataPoolService dataPoolService;
+    private final VehicleService vehicleService;
 
     public static void main(String[] args) {
         SpringApplication.run(VehicoolApplication.class, args);
@@ -73,6 +72,57 @@ public class VehicoolApplication {
             lenderService.save(lender);
             user.setLenderProfile(lender);
             administratorService.saverUser(user, user.getUsername());
+            Vehicle vehicle = new Vehicle();
+            vehicle.setLender(lender);
+            vehicle.setBrand("Rolls-Royce");
+            vehicle.setModel("Phantom");
+            vehicle.setEngineSize(6.8);
+            vehicle.setAvailable(true);
+            vehicle.setPlateNo("AA666EH");
+            vehicle.setLocation(dataPoolService.getDataPoolById(24L));
+            vehicle.setVehicleType(dataPoolService.findByEnumLabel("Cars"));
+            vehicle.setEngineType(dataPoolService.findByEnumLabel("Gasoline"));
+            vehicle.setColor("Black");
+            vehicle.setTransmissionType(dataPoolService.findByEnumLabel("Automatic"));
+            vehicle.setStatus(dataPoolService.findByEnumLabel("VerifiedVehicle"));
+            vehicle.setNoOfSeats(4L);
+            vehicle.setProductionYear(2024L);
+            vehicle.setVin("SC22301232902DK");
+            vehicleService.save(vehicle);
+            Vehicle vehicle2 = new Vehicle();
+            vehicle2.setLender(lender);
+            vehicle2.setBrand("Mercedes-Benz");
+            vehicle2.setModel("S-class");
+            vehicle2.setEngineSize(4.0);
+            vehicle2.setAvailable(true);
+            vehicle2.setPlateNo("AA001EH");
+            vehicle2.setLocation(dataPoolService.getDataPoolById(24L));
+            vehicle2.setVehicleType(dataPoolService.findByEnumLabel("Cars"));
+            vehicle2.setEngineType(dataPoolService.findByEnumLabel("Gasoline"));
+            vehicle2.setColor("White");
+            vehicle2.setTransmissionType(dataPoolService.findByEnumLabel("Automatic"));
+            vehicle2.setStatus(dataPoolService.findByEnumLabel("VerifiedVehicle"));
+            vehicle2.setNoOfSeats(4L);
+            vehicle2.setProductionYear(2024L);
+            vehicle2.setVin("AK22336332902DK");
+            vehicleService.save(vehicle2);
+            Vehicle vehicle3 = new Vehicle();
+            vehicle3.setLender(lender);
+            vehicle3.setBrand("Fiat");
+            vehicle3.setModel("Punto");
+            vehicle3.setEngineSize(1.2);
+            vehicle3.setAvailable(true);
+            vehicle3.setPlateNo("AA283VL");
+            vehicle3.setLocation(dataPoolService.getDataPoolById(25L));
+            vehicle3.setVehicleType(dataPoolService.findByEnumLabel("Cars"));
+            vehicle3.setEngineType(dataPoolService.findByEnumLabel("Gasoline"));
+            vehicle3.setColor("Pink");
+            vehicle3.setTransmissionType(dataPoolService.findByEnumLabel("Automatic"));
+            vehicle3.setStatus(dataPoolService.findByEnumLabel("VerifiedVehicle"));
+            vehicle3.setNoOfSeats(5L);
+            vehicle3.setProductionYear(2024L);
+            vehicle3.setVin("GT12336332902DK");
+            vehicleService.save(vehicle3);
         }
         if (userService.getUserByUsername("renter") == null) {
             authenticationService.register(new RegisterRequest("renter", "renter", "renter", "renter@renter.com","0692011111", "12345678"));
