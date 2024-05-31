@@ -46,6 +46,9 @@ public class VehicoolApplication {
             User user = userService.getUserByUsername("owner");
             Set<Role> roles = new HashSet<>();
             roles.add(Role.ADMIN);
+            roles.add(Role.LENDER);
+            roles.add(Role.RENTER);
+            roles.add(Role.USER);
             user.setRoles(roles);
             user.setUserStatus(dataPoolService.findByEnumLabel("VerifiedUser"));
             administratorService.saverUser(user, user.getUsername());
