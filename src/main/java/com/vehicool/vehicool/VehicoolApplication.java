@@ -2,6 +2,10 @@ package com.vehicool.vehicool;
 
 import com.vehicool.vehicool.business.service.AdministratorService;
 import com.vehicool.vehicool.business.service.DataPoolService;
+import com.vehicool.vehicool.business.service.LenderService;
+import com.vehicool.vehicool.business.service.RenterService;
+import com.vehicool.vehicool.persistence.entity.Lender;
+import com.vehicool.vehicool.persistence.entity.Renter;
 import com.vehicool.vehicool.security.auth.AuthenticationService;
 import com.vehicool.vehicool.security.auth.RegisterRequest;
 import com.vehicool.vehicool.security.user.Role;
@@ -24,6 +28,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class VehicoolApplication {
     private final AuthenticationService authenticationService;
+    private final LenderService lenderService;
+    private final RenterService renterService;
     private final UserService userService;
     private final AdministratorService administratorService;
     private final JdbcTemplate jdbcTemplate;
@@ -52,9 +58,36 @@ public class VehicoolApplication {
             user.setRoles(roles);
             user.setUserStatus(dataPoolService.findByEnumLabel("VerifiedUser"));
             administratorService.saverUser(user, user.getUsername());
-            return "Owner account created.=======================> Username is :" + user.getUsername();
         }
-        return "No initilizers required";
+        if (userService.getUserByUsername("lender") == null) {
+            authenticationService.register(new RegisterRequest("lender", "lender", "lender", "lender@lender.com", "12345678"));
+            User user = userService.getUserByUsername("lender");
+            Set<Role> roles = new HashSet<>();
+            roles.add(Role.LENDER);
+            roles.add(Role.USER);
+            user.setRoles(roles);
+            user.setUserStatus(dataPoolService.findByEnumLabel("VerifiedUser"));
+            administratorService.saverUser(user, user.getUsername());
+            Lender lender = new Lender();
+            lender.setUser(user);
+            lender.setStatus(dataPoolService.findByEnumLabel("VerifiedLender"));
+            lenderService.save(lender);
+        }
+        if (userService.getUserByUsername("renter") == null) {
+            authenticationService.register(new RegisterRequest("renter", "renter", "renter", "renter@renter.com", "12345678"));
+            User user = userService.getUserByUsername("renter");
+            Set<Role> roles = new HashSet<>();
+            roles.add(Role.RENTER);
+            roles.add(Role.USER);
+            user.setRoles(roles);
+            user.setUserStatus(dataPoolService.findByEnumLabel("VerifiedUser"));
+            administratorService.saverUser(user, user.getUsername());
+            Renter renter = new Renter();
+            renter.setStatus(dataPoolService.findByEnumLabel("VerifiedRenter"));
+            renter.setUser(user);
+            renterService.save(renter);
+        }
+        return "ACCOUNTS CREATED";
     }
 
 }
