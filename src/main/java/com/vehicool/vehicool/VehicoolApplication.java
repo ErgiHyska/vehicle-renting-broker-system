@@ -48,7 +48,7 @@ public class VehicoolApplication {
             System.out.println("SQL script executed successfully!");
         }
         if (userService.getUserByUsername("owner") == null) {
-            authenticationService.register(new RegisterRequest("owner", "vehicool", "project", "vehicool@gmail.com", "12345678"));
+            authenticationService.register(new RegisterRequest("owner", "vehicool", "project", "vehicool@gmail.com","0682011111", "12345678"));
             User user = userService.getUserByUsername("owner");
             Set<Role> roles = new HashSet<>();
             roles.add(Role.ADMIN);
@@ -60,7 +60,7 @@ public class VehicoolApplication {
             administratorService.saverUser(user, user.getUsername());
         }
         if (userService.getUserByUsername("lender") == null) {
-            authenticationService.register(new RegisterRequest("lender", "lender", "lender", "lender@lender.com", "12345678"));
+            authenticationService.register(new RegisterRequest("lender", "lender", "lender", "lender@lender.com","0672011111", "12345678"));
             User user = userService.getUserByUsername("lender");
             Set<Role> roles = new HashSet<>();
             roles.add(Role.LENDER);
@@ -75,7 +75,7 @@ public class VehicoolApplication {
             administratorService.saverUser(user, user.getUsername());
         }
         if (userService.getUserByUsername("renter") == null) {
-            authenticationService.register(new RegisterRequest("renter", "renter", "renter", "renter@renter.com", "12345678"));
+            authenticationService.register(new RegisterRequest("renter", "renter", "renter", "renter@renter.com","0692011111", "12345678"));
             User user = userService.getUserByUsername("renter");
             Set<Role> roles = new HashSet<>();
             roles.add(Role.RENTER);

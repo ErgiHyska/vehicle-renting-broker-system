@@ -1,7 +1,6 @@
 
 package com.vehicool.vehicool.business.querydsl;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

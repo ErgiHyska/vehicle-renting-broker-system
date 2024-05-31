@@ -40,10 +40,11 @@ public class AuthenticationService {
         User user = User.builder().firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .email(request.getEmail())
+                .phoneNumber(request.getPhoneNumber())
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .roles(roles)
-                .userStatus(dataPoolService.getDataPoolById(1l)).build();
+                .userStatus(dataPoolService.findByEnumLabel("unconfirmedUser")).build();
 
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);
