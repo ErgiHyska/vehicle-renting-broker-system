@@ -73,9 +73,11 @@ public class User implements UserDetails {
     private Renter renterProfile;
 
     @OneToMany(mappedBy ="user")
+    @JsonBackReference
     private List<ConfidentialFile> confidentialFiles;
 
     @OneToMany(mappedBy ="corresponingUser")
+    @JsonBackReference
     private List<Notification> notifications;
 
     @OneToOne

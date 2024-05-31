@@ -63,9 +63,9 @@ public class UserService {
         return images;
     }
     @Transactional
-    public String uploadRenterConfidentialFile(List<MultipartFile> file, Principal connectedUser) throws IOException {
+    public String uploadConfidentialFile(List<MultipartFile> file, String username) throws IOException {
 
-        User user = repository.findByUsername(connectedUser.getName()).orElse(null);
+        User user = repository.findByUsername(username).orElse(null);
         if(user==null){
             return "USER NOT FOUND!";
         }

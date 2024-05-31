@@ -10,11 +10,13 @@ import com.vehicool.vehicool.util.mappers.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.List;
 
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
@@ -88,7 +90,7 @@ public class UserController {
             }
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "User have already a renter profile!");
         } catch (Exception e) {
-            return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
+            return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
 
@@ -98,6 +100,9 @@ public class UserController {
             User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
             if (user == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            if (!user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT VERIFIED!");
             }
             if (user.getLenderProfile().equals(null)) {
                 Lender lender = new Lender();
@@ -113,6 +118,23 @@ public class UserController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
         }
     }
+    @PostMapping(value = "/user-verification-application", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> userVerificationApplication(Principal connectedUser, @RequestParam("image") List<MultipartFile> files) {
+        try {
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            if(!user.getUserStatus().getEnumLabel().matches(dataPoolService.findByEnumLabel("unconfirmedUser").getEnumLabel())){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
+            }
+            String message = service.uploadConfidentialFile(files,user.getUsername());
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, message, ERROR_OCCURRED);
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
+        }
+    }
+
     @GetMapping("/notifications")
     public ResponseEntity<?> notifications(Principal connectedUser) {
         try {

@@ -182,7 +182,6 @@ public class AdminController {
                 Set<Role> roles = new HashSet<>();
                 roles.add(Role.BANNED_USER);
                 user.setRoles(roles);
-                user.setUserStatus(newStatus);
                 DataPool Lenderstatus = dataPoolService.findByEnumLabel("BannedLender");
                 if(user.getLenderProfile()!=null) {
                     Lender lenderProfile = user.getLenderProfile();
@@ -195,6 +194,7 @@ public class AdminController {
                     renterProfile.setStatus(renterStatus);
                     renterService.save(renterProfile);
                 }
+                user.setUserStatus(newStatus);
                 adminService.saverUser(user, username);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, RECORD_UPDATED);
             }
@@ -202,7 +202,8 @@ public class AdminController {
                 Set<Role> userRoles = new HashSet<>();
                 userRoles.add(Role.USER);
                 user.setRoles(userRoles);
-                if (user.getLenderProfile() != null) {
+                user.setUserStatus(newStatus);
+                if (user.getLenderProfile() != null && user.getUserStatus().getEnumLabel().matches("BannedUser")) {
                     DataPool Lenderstatus = dataPoolService.findByEnumLabel("unconfirmedLender");
                     Lender lenderProfile = user.getLenderProfile();
                     lenderProfile.setStatus(Lenderstatus);
@@ -214,6 +215,7 @@ public class AdminController {
                     renterProfile.setStatus(renterStatus);
                     renterService.save(renterProfile);
                 }
+                user.setUserStatus(newStatus);
                 adminService.saverUser(user, username);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, RECORD_UPDATED);
             }

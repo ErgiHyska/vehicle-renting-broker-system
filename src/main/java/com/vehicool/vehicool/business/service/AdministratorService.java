@@ -31,7 +31,7 @@ public class AdministratorService {
     }
     public User saverUser(User user,String username){
         user.setUsername(username);
-        return userRepository.save(user);
+        return userRepository.saveAndFlush(user);
     }
 
 
