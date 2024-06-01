@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -53,6 +52,7 @@ public class VehicleController {
             Pageable pageRequest = PageRequest.of(page, size, Sort.by(sort));
             Page<Vehicle> vehiclePage = vehicleService.findAll(vehicleFilter, pageRequest);
 
+
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehiclePage, RECORDS_RECEIVED);
         } catch (PropertyReferenceException e) {
             log.error(ERROR_OCCURRED, e.getMessage());
@@ -75,12 +75,6 @@ public class VehicleController {
         }
     }
 
-    //    @GetMapping("/{id}/images")
-//    public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable Long id) throws IOException {
-//        List<byte[]> images = vehicleService.downloadVehiclePicturesById(id);
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .contentType(MediaType.valueOf("image/png")).body(images.get(0));
-//    }
     @GetMapping("/{vehicleId}/images")
     public ResponseEntity<Object> getVehicleImages(@PathVariable Long vehicleId) {
         try {
@@ -89,7 +83,7 @@ public class VehicleController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             List<String> encodedImages = new ArrayList<>();
-            for(byte[] image : images){
+            for (byte[] image : images) {
                 String encodedImage = Base64.getEncoder().encodeToString(image);
                 encodedImages.add(encodedImage);
             }

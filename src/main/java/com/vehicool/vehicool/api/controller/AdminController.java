@@ -27,10 +27,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -49,6 +50,7 @@ public class AdminController {
     private final AdministratorService adminService;
     private final VehicleService vehicleService;
     private final UserService userService;
+    private final NotificationService notificationService;
     private final BannedUsersAppealingService bannedUsersAppealingService;
 
     @GetMapping("/list-all-vehicles")
@@ -298,6 +300,13 @@ public class AdminController {
             if (newStatus == null || !newStatus.getEnumName().matches("LenderStatus")) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
+            Notification notification = new Notification();
+            notification.setIsRead(false);
+            LocalDateTime localDateTime = LocalDateTime.now();
+            ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+            Instant instant = zonedDateTime.toInstant();
+            notification.setDateReceived(Date.from(instant));
+            notification.setCorresponingUser(user);
             Set<Role> activeRoles = user.getRoles();
             if (newStatus.getEnumLabel().matches("VerifiedLender")) {
                 if (user.getLenderProfile() == null) {
@@ -317,6 +326,8 @@ public class AdminController {
                     user.setRoles(activeRoles);
                     adminService.saverUser(user, username);
                 }
+                notification.setMessage("Your lender profile application is approved!");
+                notificationService.save(notification);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "USER LENDER PROFILE IS IN CONFIRMED STATUS!");
             } else if (newStatus.getEnumLabel().matches("BannedLender")) {
                 if (user.getLenderProfile() == null) {
@@ -336,6 +347,8 @@ public class AdminController {
                     user.setRoles(activeRoles);
                     adminService.saverUser(user, username);
                 }
+                notification.setMessage("Your lender profile is banned! If you think this was a mistake you can appeal your status!");
+                notificationService.save(notification);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "USER LENDER PROFILE IS IN BANNED STATUS!");
             } else if (newStatus.getEnumLabel().matches("unconfirmedLender")) {
                 if (user.getLenderProfile() == null) {
@@ -355,6 +368,12 @@ public class AdminController {
                     user.setRoles(activeRoles);
                     adminService.saverUser(user, username);
                 }
+                if (user.getLenderProfile().getStatus().getEnumLabel().matches("BannedLender")) {
+                    notification.setMessage("Your lender profile is no longer banned!Apply for confirmation in order to gain profile privileges!");
+                } else {
+                    notification.setMessage("Your lender profile application is not accepted!Contact us via email in order to get more information!");
+                }
+                notificationService.save(notification);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "LENDER STATUS IS NO LONGER BANNED BUT NEED RECONFIRMATION!");
             } else {
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "LENDER STATUS REMAINS UNCHANGED!");
@@ -376,12 +395,34 @@ public class AdminController {
             if (vehicle == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found!");
             }
+            Notification notification = new Notification();
+            notification.setIsRead(false);
+            LocalDateTime localDateTime = LocalDateTime.now();
+            ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+            Instant instant = zonedDateTime.toInstant();
+            notification.setDateReceived(Date.from(instant));
+            notification.setCorresponingUser(vehicle.getLender().getUser());
+            if (newStatus.getEnumLabel().matches("VerifiedVehicle")) {
+                notification.setMessage("Your vehicle with plate no:" + vehicle.getPlateNo() + " is verified!");
+            } else if (newStatus.getEnumLabel().matches("BannedVehicle") && vehicle.getStatus().getEnumLabel().matches("BanAppealingVehicle")) {
+                notification.setMessage("Your ban appeal for vehicle with plate no:" + vehicle.getPlateNo() + " is refused!");
+                vehicle.setAvailable(false);
+            } else if (newStatus.getEnumLabel().matches("BannedVehicle") && !vehicle.getStatus().getEnumLabel().matches("BanAppealingVehicle")) {
+                notification.setMessage("Your vehicle with plate no:" + vehicle.getPlateNo() + " is banned!");
+            } else if (newStatus.getEnumLabel().matches("unconfirmedVehicle") && !(vehicle.getStatus().getEnumLabel().matches("BanAppealingVehicle") ||vehicle.getStatus().getEnumLabel().matches("BannedVehicle")) ) {
+                notification.setMessage("Your vehicle with plate no:" + vehicle.getPlateNo() + " is not approved!Reupload correct vehicle documents!");
+            } else if (newStatus.getEnumLabel().matches("unconfirmedVehicle") && (vehicle.getStatus().getEnumLabel().matches("BanAppealingVehicle")||vehicle.getStatus().getEnumLabel().matches("BannedVehicle"))) {
+                notification.setMessage("Your vehicle with plate no:" + vehicle.getPlateNo() + " is no longer banned! Apply for verification to proceed further !");
+            }
+            notificationService.save(notification);
             vehicle.setStatus(newStatus);
+            vehicleService.update(vehicle, vehicleId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, newStatus.getEnumLabel(), "Vehicle status set!");
         } catch (Exception e) {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
+
 
     @PostMapping("/list-all-users/{username}/renter-status-management")
     @Transactional
@@ -402,6 +443,13 @@ public class AdminController {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Set<Role> activeRoles = user.getRoles();
+            Notification notification = new Notification();
+            notification.setIsRead(false);
+            LocalDateTime localDateTime = LocalDateTime.now();
+            ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+            Instant instant = zonedDateTime.toInstant();
+            notification.setDateReceived(Date.from(instant));
+            notification.setCorresponingUser(user);
             if (newStatus.getEnumLabel().matches("VerifiedRenter")) {
                 if (user.getRenterProfile() == null) {
                     Renter renter = new Renter();
@@ -420,6 +468,8 @@ public class AdminController {
                     user.setRoles(activeRoles);
                     adminService.saverUser(user, username);
                 }
+                notification.setMessage("Your renter profile application is approved!");
+                notificationService.save(notification);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "USER RENTER PROFILE IS IN CONFIRMED STATUS!");
             } else if (newStatus.getEnumLabel().matches("BannedRenter")) {
                 if (user.getRenterProfile() == null) {
@@ -439,6 +489,8 @@ public class AdminController {
                     user.setRoles(activeRoles);
                     adminService.saverUser(user, username);
                 }
+                notification.setMessage("Your renter profile is banned! If you think this was a mistake you can appeal your status!");
+                notificationService.save(notification);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "USER RENTER PROFILE IS IN BANNED STATUS!");
             } else if (newStatus.getEnumLabel().matches("unconfirmedRenter")) {
                 if (user.getRenterProfile() == null) {
@@ -458,6 +510,12 @@ public class AdminController {
                     user.setRoles(activeRoles);
                     adminService.saverUser(user, username);
                 }
+                if (user.getRenterProfile().getStatus().getEnumLabel().matches("BannedRenter")) {
+                    notification.setMessage("Your renter profile is no longer banned!Apply for confirmation in order to gain profile privileges!");
+                } else {
+                    notification.setMessage("Your renter profile application is not accepted!Upload correct pictures front-back of your driver license!");
+                }
+                notificationService.save(notification);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "RENTER STATUS IS NO LONGER BANNED BUT NEED RECONFIRMATION!");
             } else {
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, "RENTER STATUS REMAINS UNCHANGED!");

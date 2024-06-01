@@ -23,11 +23,11 @@ public class VehicleCommerce {
     private Vehicle vehicle;
 
     @Column(name = "date_available",nullable = false)
-    private Double pricePerDay;
-
-    @Column(name = "maxim_date_available")
     private Date dateAvailable;
 
-    @Column(name = "price_per_day")
+    @Column(name = "maxim_date_available")
     private Date maxDateAvailable;
+
+    @Column(name = "price_per_day")
+    private Double pricePerDay;
 }

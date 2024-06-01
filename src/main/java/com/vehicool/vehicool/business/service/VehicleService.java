@@ -67,7 +67,7 @@ public class VehicleService {
                 continue;
             }
             String filePath = FOLDER_PATH + file.getOriginalFilename();
-            fileDataList.add(FileData.builder().name(file.getOriginalFilename()).vehicle(vehicle).type(file.getContentType()).filePath(filePath).build());
+            fileDataList.add(FileData.builder().name(file.getOriginalFilename()).vehicle(vehicle).type(file.getContentType()).filePath(filePath).isProfileImage(false).build());
             file.transferTo(new File(filePath));
         }
         systemStorageRepository.saveAll(fileDataList);

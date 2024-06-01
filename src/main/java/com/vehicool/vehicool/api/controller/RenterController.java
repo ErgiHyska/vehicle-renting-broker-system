@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -27,7 +26,6 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.List;
-
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
 @Slf4j

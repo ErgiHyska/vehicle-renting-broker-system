@@ -74,8 +74,8 @@ public class LenderController {
                 vehicleCommerce.setVehicle(vehicle);
                 vehicleCommerceService.save(vehicleCommerce);
                 vehicle.setAvailable(vehicleCommercialDTO.getIsAvailable());
-                vehicleService.update(vehicle,vehicleId);
-                return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicleCommerce , RECORDS_RECEIVED);
+                vehicleService.update(vehicle, vehicleId);
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicleCommerce, RECORDS_RECEIVED);
             } else {
                 VehicleCommerce vehicleCommerce = vehicle.getVehicleCommerce();
                 vehicleCommerce.setVehicle(vehicle);
@@ -84,8 +84,8 @@ public class LenderController {
                 vehicleCommerce.setMaxDateAvailable(vehicleCommercialDTO.getMaxDateAvailable());
                 vehicleCommerceService.update(vehicleCommerce, vehicleCommerce.getId());
                 vehicle.setAvailable(vehicleCommercialDTO.getIsAvailable());
-                vehicleService.update(vehicle,vehicleId);
-                return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicleCommerce , RECORDS_RECEIVED);
+                vehicleService.update(vehicle, vehicleId);
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicleCommerce, RECORDS_RECEIVED);
             }
 
         } catch (PropertyReferenceException e) {
@@ -489,11 +489,12 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
+
     @GetMapping(value = "/lender-vehicles/{vehicleId}")
     public ResponseEntity<Object> getVehicledetails(Principal connectedUser, @PathVariable Long vehicleId) {
         try {
             User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
-            if (user == null ) {
+            if (user == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
@@ -504,6 +505,7 @@ public class LenderController {
 
         }
     }
+
     @DeleteMapping(value = "/lender-vehicles/{vehicleId}/deleteImage/{imageId}")
     @Transactional
     public ResponseEntity<Object> vehicleImagesIds(Principal connectedUser, @PathVariable Long
@@ -532,25 +534,35 @@ public class LenderController {
         }
     }
 
-
-//    @GetMapping("/images")
-//    public ResponseEntity<Object>  getImages() throws IOException {
-//        List<ImageResponse> images = new ArrayList<>();
-//
-//        // Assuming you have image names in a list
-//        String[] imageNames = {"image1.jpg", "image2.jpg", "image3.jpg"};
-//
-//        for (String imageName : imageNames) {
-//            Resource imgFile = new ClassPathResource("/static/images/" + imageName);
-//            byte[] imageBytes = StreamUtils.copyToByteArray(imgFile.getInputStream());
-//            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-//            String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-//                    .path("/static/images/")
-//                    .path(imageName)
-//                    .toUriString();
-//            images.add(new ImageResponse(imageUrl, base64Image));
-//        }
-//
-//        return images;
-//    }
+    @PostMapping(value = "/lender-vehicles/{vehicleId}/set-profile-image/{imageId}")
+    @Transactional
+    public ResponseEntity<Object> setProfileImage(Principal connectedUser, @PathVariable Long
+            vehicleId, @PathVariable Long imageId) {
+        try {
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
+            }
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            if (vehicle == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found !");
+            }
+            FileData fileData = storageService.getStorageFileById(imageId);
+            if (fileData == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Image not found !");
+            }
+            List<FileData> images = vehicle.getImages();
+            images.stream().forEach(elem -> elem.setIsProfileImage(false));
+            images.stream().filter(elem -> elem.getId() == imageId).findFirst().get().setIsProfileImage(true);
+            storageService.saveAllImages(images);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, "Image deleted successfully !");
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
 }
