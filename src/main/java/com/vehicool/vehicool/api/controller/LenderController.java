@@ -518,4 +518,25 @@ public class LenderController {
         }
     }
 
+
+//    @GetMapping("/images")
+//    public ResponseEntity<Object>  getImages() throws IOException {
+//        List<ImageResponse> images = new ArrayList<>();
+//
+//        // Assuming you have image names in a list
+//        String[] imageNames = {"image1.jpg", "image2.jpg", "image3.jpg"};
+//
+//        for (String imageName : imageNames) {
+//            Resource imgFile = new ClassPathResource("/static/images/" + imageName);
+//            byte[] imageBytes = StreamUtils.copyToByteArray(imgFile.getInputStream());
+//            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+//            String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+//                    .path("/static/images/")
+//                    .path(imageName)
+//                    .toUriString();
+//            images.add(new ImageResponse(imageUrl, base64Image));
+//        }
+//
+//        return images;
+//    }
 }

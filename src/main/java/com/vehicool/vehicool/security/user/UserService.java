@@ -1,11 +1,15 @@
 package com.vehicool.vehicool.security.user;
 
+import com.querydsl.core.types.Predicate;
+import com.vehicool.vehicool.business.querydsl.UserFilter;
+import com.vehicool.vehicool.business.querydsl.UserQueryDsl;
+import com.vehicool.vehicool.business.querydsl.VehicleFilter;
 import com.vehicool.vehicool.persistence.entity.ConfidentialFile;
-import com.vehicool.vehicool.persistence.entity.Lender;
-import com.vehicool.vehicool.persistence.entity.Renter;
 import com.vehicool.vehicool.persistence.repository.DatabaseStorageRepository;
 import com.vehicool.vehicool.util.fileconfigs.ImageUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
     private final DatabaseStorageRepository databaseStorageRepository;
+    private final UserQueryDsl userQueryDsl;
 
     public User getUserByUsername(String username) {
         return repository.findByUsername(username).orElse(null);
@@ -33,6 +38,10 @@ public class UserService {
         user.setUsername(username);
         repository.saveAndFlush(user);
         return user;
+    }
+    public Page<User> listUsers(UserFilter userFilter, Pageable pageRequest) {
+        Predicate filter = userQueryDsl.filter(userFilter);
+        return repository.findAll(filter,pageRequest);
     }
 
     public User getUserById(Long id) {

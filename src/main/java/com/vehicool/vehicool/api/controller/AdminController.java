@@ -1,6 +1,7 @@
 package com.vehicool.vehicool.api.controller;
 
 import com.vehicool.vehicool.api.dto.StatusDTO;
+import com.vehicool.vehicool.business.querydsl.UserFilter;
 import com.vehicool.vehicool.business.querydsl.VehicleFilter;
 import com.vehicool.vehicool.business.service.*;
 import com.vehicool.vehicool.persistence.entity.*;
@@ -118,11 +119,16 @@ public class AdminController {
 
     @GetMapping("/list-all-users")
     @Transactional
-    public ResponseEntity<Object> listUsers() {
+    public ResponseEntity<Object> listUsers(@Valid @RequestParam Map<String, Object> userFilterRequest,
+                                            @RequestParam(defaultValue = "0") Integer page,
+                                            @RequestParam(defaultValue = "10") Integer size,
+                                            @RequestParam(defaultValue = "id") String sort) {
         try {
-            List<User> users = userService.getAllUsers();
+            UserFilter userFilter = modelMapper.map(userFilterRequest, UserFilter.class);
+            Pageable pageRequest = PageRequest.of(page, size, Sort.by(sort));
+            Page<User> usersePage = userService.listUsers(userFilter, pageRequest);
 
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, users, RECORDS_RECEIVED);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, usersePage, RECORDS_RECEIVED);
         } catch (Exception e) {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }

@@ -48,9 +48,9 @@ public class VehicleController {
                                        @RequestParam(defaultValue = "10") Integer size,
                                        @RequestParam(defaultValue = "id") String sort) {
         try {
-            VehicleFilter companyFilter = modelMapper.map(vehicleFilterRequest, VehicleFilter.class);
+            VehicleFilter vehicleFilter = modelMapper.map(vehicleFilterRequest, VehicleFilter.class);
             Pageable pageRequest = PageRequest.of(page, size, Sort.by(sort));
-            Page<Vehicle> vehiclePage = vehicleService.findAll(companyFilter, pageRequest);
+            Page<Vehicle> vehiclePage = vehicleService.findAll(vehicleFilter, pageRequest);
 
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehiclePage, RECORDS_RECEIVED);
         } catch (PropertyReferenceException e) {
