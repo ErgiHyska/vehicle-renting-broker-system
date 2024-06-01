@@ -89,6 +89,7 @@ public class VehicleService {
         for (FileData fileData : filesData) {
             String filePath = fileData.getFilePath();
             byte[] image = Files.readAllBytes(new File(filePath).toPath());
+            images.add(image);
         }
         return images;
     }
