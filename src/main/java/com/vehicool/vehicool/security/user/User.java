@@ -64,11 +64,9 @@ public class User implements UserDetails {
 
     @OneToOne
     @JoinColumn(name = "lender_profile_id")
-    @JsonBackReference
     private Lender lenderProfile;
 
     @OneToOne
-    @JsonBackReference
     @JoinColumn(name = "renter_profile_id")
     private Renter renterProfile;
 

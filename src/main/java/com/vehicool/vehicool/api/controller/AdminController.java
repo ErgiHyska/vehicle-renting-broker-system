@@ -3,10 +3,7 @@ package com.vehicool.vehicool.api.controller;
 import com.vehicool.vehicool.api.dto.StatusDTO;
 import com.vehicool.vehicool.business.querydsl.VehicleFilter;
 import com.vehicool.vehicool.business.service.*;
-import com.vehicool.vehicool.persistence.entity.DataPool;
-import com.vehicool.vehicool.persistence.entity.Lender;
-import com.vehicool.vehicool.persistence.entity.Renter;
-import com.vehicool.vehicool.persistence.entity.Vehicle;
+import com.vehicool.vehicool.persistence.entity.*;
 import com.vehicool.vehicool.security.user.Role;
 import com.vehicool.vehicool.security.user.User;
 import com.vehicool.vehicool.security.user.UserService;
@@ -138,6 +135,47 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
+    @GetMapping("/list-all-users/{userId}/user-ban-appeal")
+    @Transactional
+    public ResponseEntity<Object> getUserBanAppeal(@PathVariable Long userId) {
+        try {
+            User user = userService.getUserById(userId);
+            if(user == null){
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            BannedUsersAppealing appeal = user.getBannedUsersAppealing();
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, appeal, RECORDS_RECEIVED);
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
+//    @GetMapping("/list-all-users/{userId}/confidential-files")
+//    @Transactional
+//    public ResponseEntity<Object> getUserBanAppealFiles(@PathVariable Long userId) {
+//        try {
+//            User user = userService.getUserById(userId);
+//            if(user == null){
+//                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+//            }
+//            BannedUsersAppealing appeal = user.getBannedUsersAppealing();
+//            List<byte[]> confidentialFiles = userService.getUserConfidentialFiles(user.getUsername());
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            ZipOutputStream zos = new ZipOutputStream(baos);
+//
+//            for (int i = 0; i < confidentialFiles.size(); i++) {
+//                ZipEntry entry = new ZipEntry("file" + (i + 1) + ".png");
+//                entry.setSize(confidentialFiles.get(i).length);
+//                zos.putNextEntry(entry);
+//                zos.write(confidentialFiles.get(i));
+//                zos.closeEntry();
+//            }
+//            zos.close();
+//
+//            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=lender_files.zip").body(baos.toByteArray());
+//        } catch (Exception e) {
+//            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+//        }
+//    }
 
     @GetMapping("/list-all-users/{username}/confidential-files")
     @Transactional

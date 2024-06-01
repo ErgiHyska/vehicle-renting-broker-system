@@ -19,6 +19,7 @@ public class Renter {
 
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @ManyToOne(optional = false)
