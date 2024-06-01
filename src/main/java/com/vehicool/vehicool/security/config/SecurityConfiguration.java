@@ -39,6 +39,7 @@ public class SecurityConfiguration {
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
                                 .requestMatchers("/admin-panel/**").hasAnyRole(ADMIN.name())
+                                .requestMatchers("/user/ban-appeal").hasAnyRole(BANNED_USER.name())
                                 .requestMatchers("/user/**").hasAnyRole(USER.name())
                                 .requestMatchers("/lender/**").hasAnyRole(ADMIN.name(),LENDER.name())
                                 .requestMatchers("/renter/**").hasAnyRole(ADMIN.name(),RENTER.name())

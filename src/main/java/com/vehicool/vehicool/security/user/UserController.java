@@ -2,20 +2,21 @@ package com.vehicool.vehicool.security.user;
 
 import com.vehicool.vehicool.api.dto.AppealDTO;
 import com.vehicool.vehicool.business.service.*;
-import com.vehicool.vehicool.persistence.entity.BannedUsersAppealing;
-import com.vehicool.vehicool.persistence.entity.Lender;
-import com.vehicool.vehicool.persistence.entity.Notification;
-import com.vehicool.vehicool.persistence.entity.Renter;
+import com.vehicool.vehicool.persistence.entity.*;
+import com.vehicool.vehicool.persistence.repository.DatabaseStorageRepository;
+import com.vehicool.vehicool.util.fileconfigs.ImageUtils;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.vehicool.vehicool.util.constants.Messages.*;
@@ -32,6 +33,8 @@ public class UserController {
     private final LenderService lenderService;
     private final NotificationService notificationService;
     private final StorageService storageService;
+    private final DatabaseStorageRepository databaseStorageRepository;
+    private final BannedUsersAppealingService bannedUsersAppealingService;
 
     @PatchMapping("/change-password")
     public ResponseEntity<?> changePassword(
@@ -50,22 +53,38 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user-ban-appeal")
-    public ResponseEntity<?> banAppeal(Principal connectedUser,@Valid AppealDTO appealDTO) {
+    @PostMapping(value = "/ban-appeal", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<?> banAppeal(Principal connectedUser, @Valid AppealDTO appealDTO) {
         try {
             User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
             if (user == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
             }
-            if(user.getBannedUsersAppealing()!=null && user.getBannedUsersAppealing().getStatus().getEnumLabel().matches("BanAppealingUser")){
+            if (user.getBannedUsersAppealing() != null && user.getBannedUsersAppealing().getStatus().getEnumLabel().matches("BanAppealingUser")) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "YOU HAVE AN ACTIVE APPEAL!");
             }
             BannedUsersAppealing appeal = new BannedUsersAppealing();
             appeal.setUser(user);
             appeal.setDescription(appealDTO.getDescription());
-            for(MultipartFile multipartFile:appealDTO.getSupportFiles()){
-
+            List<ConfidentialFile> supportFiles = new ArrayList<>();
+            for (MultipartFile file : appealDTO.getSupportFiles()) {
+                supportFiles.add(ConfidentialFile.builder()
+                        .name(file.getOriginalFilename())
+                        .userBanAppeal(appeal)
+                        .type(file.getContentType())
+                        .imageData(ImageUtils.compressImage(file.getBytes())).build());
             }
+            if (user.getBannedUsersAppealing() != null && user.getBannedUsersAppealing().getStatus().getEnumLabel().matches("BannedUser")) {
+                appeal.setStatus(dataPoolService.findByEnumLabel("Pending-repetition"));
+                bannedUsersAppealingService.updateAppeal(appeal, user.getBannedUsersAppealing().getId());
+            } else {
+                appeal.setStatus(dataPoolService.findByEnumLabel("Pending-active"));
+                bannedUsersAppealingService.saveAppeal(appeal);
+            }
+            databaseStorageRepository.saveAll(supportFiles);
+            user.setUserStatus(dataPoolService.findByEnumLabel("BanAppealingUser"));
+            service.updateUser(user, user.getUsername());
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, RECORDS_RECEIVED);
         } catch (Exception e) {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
@@ -118,18 +137,25 @@ public class UserController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
         }
     }
+
     @PostMapping(value = "/user-verification-application", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> userVerificationApplication(Principal connectedUser, @RequestParam("image") List<MultipartFile> files) {
         try {
             User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
-            if (user == null) {
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            if (user == null || user.getUserStatus().getEnumLabel().matches("BannedUser")|| user.getUserStatus().getEnumLabel().matches("BanAppealingUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND OR IS BANNED!");
             }
-            if(!user.getUserStatus().getEnumLabel().matches(dataPoolService.findByEnumLabel("unconfirmedUser").getEnumLabel())){
-                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
+            List<ConfidentialFile> confidentialFiles = new ArrayList<>();
+            for (MultipartFile file : files) {
+                confidentialFiles.add(ConfidentialFile.builder()
+                        .name(file.getOriginalFilename())
+                        .user(user)
+                        .type(file.getContentType())
+                        .imageData(ImageUtils.compressImage(file.getBytes())).build());
             }
-            String message = service.uploadConfidentialFile(files,user.getUsername());
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, message, ERROR_OCCURRED);
+            databaseStorageRepository.saveAll(confidentialFiles);
+            String message = service.uploadConfidentialFile(files, user.getUsername());
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, message, RECORDS_RECEIVED);
         } catch (Exception e) {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
         }
@@ -147,8 +173,9 @@ public class UserController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);
         }
     }
+
     @GetMapping("/notifications/{notificationId}")
-    public ResponseEntity<?> notificationById(Principal connectedUser,@PathVariable Long notificationId) {
+    public ResponseEntity<?> notificationById(Principal connectedUser, @PathVariable Long notificationId) {
         try {
             User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
             if (user == null) {
@@ -156,7 +183,7 @@ public class UserController {
             }
             Notification notification = notificationService.getById(notificationId);
             notification.setIsRead(true);
-            notificationService.update(notification,notificationId);
+            notificationService.update(notification, notificationId);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, notification, RECORDS_RECEIVED);
         } catch (Exception e) {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, ERROR_OCCURRED);

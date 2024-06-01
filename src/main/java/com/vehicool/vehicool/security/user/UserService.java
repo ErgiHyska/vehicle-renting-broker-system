@@ -24,15 +24,25 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
     private final DatabaseStorageRepository databaseStorageRepository;
-    public User getUserByUsername(String username){
+
+    public User getUserByUsername(String username) {
         return repository.findByUsername(username).orElse(null);
     }
-    public User getUserById(Long id){
+
+    public User updateUser(User user, String username) {
+        user.setUsername(username);
+        repository.saveAndFlush(user);
+        return user;
+    }
+
+    public User getUserById(Long id) {
         return repository.findById(id).orElse(null);
     }
-    public List<User> getAllUsers(){
+
+    public List<User> getAllUsers() {
         return repository.findAll();
     }
+
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -52,29 +62,31 @@ public class UserService {
         // save the new password
         repository.save(user);
     }
+
     public List<byte[]> getUserConfidentialFiles(String username) {
         User user = repository.findByUsername(username).orElse(null);
-        if(user==null){
+        if (user == null) {
             return null;
         }
         List<byte[]> images = new ArrayList<>();
-        List<ConfidentialFile> lenderConfidentialFiled=user.getConfidentialFiles();
-        for(ConfidentialFile currentFile:lenderConfidentialFiled){
+        List<ConfidentialFile> lenderConfidentialFiled = user.getConfidentialFiles();
+        for (ConfidentialFile currentFile : lenderConfidentialFiled) {
             byte[] image = ImageUtils.decompressImage(currentFile.getImageData());
             images.add(image);
         }
         return images;
     }
+
     @Transactional
     public String uploadConfidentialFile(List<MultipartFile> file, String username) throws IOException {
 
         User user = repository.findByUsername(username).orElse(null);
-        if(user==null){
+        if (user == null) {
             return "USER NOT FOUND!";
         }
         List<ConfidentialFile> list = new ArrayList<>();
-        for(MultipartFile current:file){
-            ConfidentialFile confidentialFile =ConfidentialFile.builder().name(current.getOriginalFilename()).type(current.getContentType()).user(user).imageData(ImageUtils.compressImage(current.getBytes())).build();
+        for (MultipartFile current : file) {
+            ConfidentialFile confidentialFile = ConfidentialFile.builder().name(current.getOriginalFilename()).type(current.getContentType()).user(user).imageData(ImageUtils.compressImage(current.getBytes())).build();
             list.add(confidentialFile);
         }
         databaseStorageRepository.saveAll(list);

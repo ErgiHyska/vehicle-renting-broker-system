@@ -48,6 +48,7 @@ public class AdminController {
     private final AdministratorService adminService;
     private final VehicleService vehicleService;
     private final UserService userService;
+    private final BannedUsersAppealingService bannedUsersAppealingService;
 
     @GetMapping("/list-all-vehicles")
     @Transactional
@@ -69,6 +70,7 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+
     @GetMapping("/list-all-vehicles/{id}")
     @Transactional
     public ResponseEntity<Object> vehicleData(@PathVariable Long id) {
@@ -86,6 +88,7 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
     }
+
     @GetMapping("/list-all-vehicles/{vehicleId}/confidential-data")
     @Transactional
     public ResponseEntity<Object> vehicleConfidentialData(@PathVariable Long vehicleId) {
@@ -135,12 +138,13 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
+
     @GetMapping("/list-all-users/{userId}/user-ban-appeal")
     @Transactional
     public ResponseEntity<Object> getUserBanAppeal(@PathVariable Long userId) {
         try {
             User user = userService.getUserById(userId);
-            if(user == null){
+            if (user == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
             }
             BannedUsersAppealing appeal = user.getBannedUsersAppealing();
@@ -149,46 +153,52 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
-//    @GetMapping("/list-all-users/{userId}/confidential-files")
-//    @Transactional
-//    public ResponseEntity<Object> getUserBanAppealFiles(@PathVariable Long userId) {
-//        try {
-//            User user = userService.getUserById(userId);
-//            if(user == null){
-//                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
-//            }
-//            BannedUsersAppealing appeal = user.getBannedUsersAppealing();
-//            List<byte[]> confidentialFiles = userService.getUserConfidentialFiles(user.getUsername());
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            ZipOutputStream zos = new ZipOutputStream(baos);
-//
-//            for (int i = 0; i < confidentialFiles.size(); i++) {
-//                ZipEntry entry = new ZipEntry("file" + (i + 1) + ".png");
-//                entry.setSize(confidentialFiles.get(i).length);
-//                zos.putNextEntry(entry);
-//                zos.write(confidentialFiles.get(i));
-//                zos.closeEntry();
-//            }
-//            zos.close();
-//
-//            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=lender_files.zip").body(baos.toByteArray());
-//        } catch (Exception e) {
-//            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
-//        }
-//    }
+
+    @GetMapping("/list-all-users/{userId}/appeal-support-evidence")
+    @Transactional
+    public ResponseEntity<Object> getUserBanAppealEvidence(@PathVariable Long userId) {
+        try {
+            User user = userService.getUserById(userId);
+            if (user == null) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            BannedUsersAppealing appeal = user.getBannedUsersAppealing();
+            List<byte[]> supportEvidence = bannedUsersAppealingService.getUserConfidentialFiles(appeal.getId());
+            if (supportEvidence.size() == 0) {
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, "User has not uploaded support files!");
+            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(baos);
+
+            for (int i = 0; i < supportEvidence.size(); i++) {
+                ZipEntry entry = new ZipEntry("file" + (i + 1) + ".png");
+                entry.setSize(supportEvidence.get(i).length);
+                zos.putNextEntry(entry);
+                zos.write(supportEvidence.get(i));
+                zos.closeEntry();
+            }
+            zos.close();
+
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + user.getFirstname() + "_" + user.getLastname() + " appeal_files.zip").body(baos.toByteArray());
+        } catch (Exception e) {
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        }
+    }
 
     @GetMapping("/list-all-users/{username}/confidential-files")
     @Transactional
     public ResponseEntity<Object> getUserConfidentialFiles(@PathVariable String username) {
         try {
             User user = userService.getUserByUsername(username);
-            if(user == null){
+            if (user == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
             }
             List<byte[]> confidentialFiles = userService.getUserConfidentialFiles(username);
+            if (confidentialFiles.size() == 0) {
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, "User has not uploaded confidential files!");
+            }
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ZipOutputStream zos = new ZipOutputStream(baos);
-
             for (int i = 0; i < confidentialFiles.size(); i++) {
                 ZipEntry entry = new ZipEntry("file" + (i + 1) + ".png");
                 entry.setSize(confidentialFiles.get(i).length);
@@ -221,12 +231,12 @@ public class AdminController {
                 roles.add(Role.BANNED_USER);
                 user.setRoles(roles);
                 DataPool Lenderstatus = dataPoolService.findByEnumLabel("BannedLender");
-                if(user.getLenderProfile()!=null) {
+                if (user.getLenderProfile() != null) {
                     Lender lenderProfile = user.getLenderProfile();
                     lenderProfile.setStatus(Lenderstatus);
                     lenderService.save(lenderProfile);
                 }
-                if(user.getRenterProfile()!=null) {
+                if (user.getRenterProfile() != null) {
                     DataPool renterStatus = dataPoolService.findByEnumLabel("BannedRenter");
                     Renter renterProfile = user.getRenterProfile();
                     renterProfile.setStatus(renterStatus);
@@ -257,7 +267,7 @@ public class AdminController {
                 adminService.saverUser(user, username);
                 return ResponseMapper.map(SUCCESS, HttpStatus.OK, user, RECORD_UPDATED);
             }
-                return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, "USER STATUS REMAINS THE SAME!");
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, null, "USER STATUS REMAINS THE SAME!");
 
         } catch (Exception e) {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
@@ -347,6 +357,7 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
+
     @PostMapping("/list-all-vehicles/{vehicleId}/vehicle-status-management")
     @Transactional
     public ResponseEntity<Object> ManageVehicleStatuses(@PathVariable Long vehicleId, @RequestBody @Valid StatusDTO StatusDTO) {
@@ -356,7 +367,7 @@ public class AdminController {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
-            if(vehicle == null){
+            if (vehicle == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found!");
             }
             vehicle.setStatus(newStatus);
@@ -365,6 +376,7 @@ public class AdminController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
+
     @PostMapping("/list-all-users/{username}/renter-status-management")
     @Transactional
     public ResponseEntity<Object> ManageRenterStatuses(@PathVariable String username, @RequestBody @Valid StatusDTO StatusDTO) {

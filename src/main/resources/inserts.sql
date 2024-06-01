@@ -50,3 +50,7 @@ INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'engineType', 'Elec
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'vehicleType', 'Cars');
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'vehicleType', 'Vans&Trucks');
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'vehicleType', 'Motorcycles');
+
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'appealStatus', 'Decided');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'appealStatus', 'Pending-active');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'appealStatus', 'Pending-repetition');
