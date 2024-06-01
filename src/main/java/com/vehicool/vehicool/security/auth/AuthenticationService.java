@@ -39,6 +39,7 @@ public class AuthenticationService {
         roles.add(Role.USER);
         User user = User.builder().firstname(request.getFirstname())
                 .lastname(request.getLastname())
+                .age(request.getAge())
                 .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
                 .username(request.getUsername())
