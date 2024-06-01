@@ -15,15 +15,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PropertyReferenceException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+//import org.springframework.util.Base64Utils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import static com.vehicool.vehicool.util.constants.Messages.*;
@@ -80,16 +78,21 @@ public class VehicleController {
 //        return ResponseEntity.status(HttpStatus.OK)
 //                .contentType(MediaType.valueOf("image/png")).body(images.get(0));
 //    }
-    @GetMapping("/{vehicleId}/images")
-    public ResponseEntity<List<byte[]>> getVehicleImages(@PathVariable Long vehicleId) {
-        try {
-            List<byte[]> images = vehicleService.downloadImageFromFileSystem(vehicleId);
-            if (images == null || images.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(images, new HttpHeaders(), HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @GetMapping("/{vehicleId}/images")
+//    public ResponseEntity<Object> getVehicleImages(@PathVariable Long vehicleId) {
+//        try {
+//            List<byte[]> images = vehicleService.downloadImageFromFileSystem(vehicleId);
+//            if (images == null || images.isEmpty()) {
+//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//            }
+//            List<String> encodedImages = new ArrayList<>();
+//            for(byte[] image : images){
+//                String encodedImage = Base64Utils.encodeToString(image);
+//                encodedImages.add(encodedImage);
+//            }
+//            return ResponseMapper.map(SUCCESS, HttpStatus.OK, encodedImages, "Images received!");
+//        } catch (IOException e) {
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 }

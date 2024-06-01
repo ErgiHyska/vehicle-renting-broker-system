@@ -489,7 +489,21 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
+    @GetMapping(value = "/lender-vehicles/{vehicleId}/imagesIds")
+    public ResponseEntity<Object> getVehicledetails(Principal connectedUser, @PathVariable Long vehicleId) {
+        try {
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null ) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, RECORD_CREATED);
+        } catch (Exception e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
 
+        }
+    }
     @DeleteMapping(value = "/lender-vehicles/{vehicleId}/deleteImage/{imageId}")
     @Transactional
     public ResponseEntity<Object> vehicleImagesIds(Principal connectedUser, @PathVariable Long

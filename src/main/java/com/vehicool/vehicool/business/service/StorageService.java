@@ -85,6 +85,16 @@ public class StorageService {
         return Files.readAllBytes(new File(filePath).toPath());
     }
 
+//    public List<String> encodeImages(List<Path> imagePaths) throws IOException {
+//        List<String> encodedImages = new ArrayList<>();
+//        for (Path path : imagePaths) {
+//            byte[] imageBytes = Files.readAllBytes(path);
+//            String encodedImage = Base64Utils.encodeToString(imageBytes);
+//            encodedImages.add(encodedImage);
+//        }
+//        return encodedImages;
+//    }
+
 
 
 }
