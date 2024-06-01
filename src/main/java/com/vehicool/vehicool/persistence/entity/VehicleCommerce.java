@@ -1,5 +1,6 @@
 package com.vehicool.vehicool.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class VehicleCommerce {
 
     @OneToOne(optional = false)
     @JoinColumn(name = "vehicleId")
+    @JsonBackReference
     private Vehicle vehicle;
 
     @Column(name = "date_available",nullable = false)

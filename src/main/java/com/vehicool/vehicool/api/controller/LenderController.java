@@ -69,10 +69,13 @@ public class LenderController {
             if (vehicle == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found !");
             }
-            if (vehicle.getVehicleCommerce()==null) {
+            if (vehicle.getVehicleCommerce() == null) {
                 VehicleCommerce vehicleCommerce = modelMapper.map(vehicleCommercialDTO, VehicleCommerce.class);
                 vehicleCommerce.setVehicle(vehicle);
                 vehicleCommerceService.save(vehicleCommerce);
+                vehicle.setAvailable(vehicleCommercialDTO.getIsAvailable());
+                vehicleService.update(vehicle,vehicleId);
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicleCommerce , RECORDS_RECEIVED);
             } else {
                 VehicleCommerce vehicleCommerce = vehicle.getVehicleCommerce();
                 vehicleCommerce.setVehicle(vehicle);
@@ -80,8 +83,11 @@ public class LenderController {
                 vehicleCommerce.setDateAvailable(vehicleCommercialDTO.getDateAvailable());
                 vehicleCommerce.setMaxDateAvailable(vehicleCommercialDTO.getMaxDateAvailable());
                 vehicleCommerceService.update(vehicleCommerce, vehicleCommerce.getId());
+                vehicle.setAvailable(vehicleCommercialDTO.getIsAvailable());
+                vehicleService.update(vehicle,vehicleId);
+                return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicleCommerce , RECORDS_RECEIVED);
             }
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, lender.getVehicles(), RECORDS_RECEIVED);
+
         } catch (PropertyReferenceException e) {
             log.error(ERROR_OCCURRED, e.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());

@@ -16,4 +16,7 @@ public class VehicleCommercialDTO {
 
     @NotNull(message = "Max date available is required!")
     private Date maxDateAvailable;
+
+    @NotNull(message = "Max date available is required!")
+    private Boolean isAvailable;
 }
