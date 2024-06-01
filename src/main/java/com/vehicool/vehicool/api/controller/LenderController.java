@@ -489,7 +489,7 @@ public class LenderController {
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
         }
     }
-    @GetMapping(value = "/lender-vehicles/{vehicleId}/imagesIds")
+    @GetMapping(value = "/lender-vehicles/{vehicleId}")
     public ResponseEntity<Object> getVehicledetails(Principal connectedUser, @PathVariable Long vehicleId) {
         try {
             User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
