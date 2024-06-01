@@ -69,7 +69,7 @@ public class LenderController {
             if (vehicle == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Vehicle not found !");
             }
-            if (vehicle.getVehicleCommerce().equals(null)) {
+            if (vehicle.getVehicleCommerce()==null) {
                 VehicleCommerce vehicleCommerce = modelMapper.map(vehicleCommercialDTO, VehicleCommerce.class);
                 vehicleCommerce.setVehicle(vehicle);
                 vehicleCommerceService.save(vehicleCommerce);
