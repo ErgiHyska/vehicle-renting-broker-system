@@ -6,8 +6,10 @@ import com.vehicool.vehicool.api.dto.VehicleCommercialDTO;
 import com.vehicool.vehicool.api.dto.VehicleDTO;
 import com.vehicool.vehicool.business.service.*;
 import com.vehicool.vehicool.persistence.entity.*;
+import com.vehicool.vehicool.persistence.repository.DatabaseStorageRepository;
 import com.vehicool.vehicool.security.user.User;
 import com.vehicool.vehicool.security.user.UserRepository;
+import com.vehicool.vehicool.util.fileconfigs.ImageUtils;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
 @Slf4j
@@ -46,6 +51,7 @@ public class LenderController {
     private final StorageService storageService;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final DatabaseStorageRepository databaseStorageRepository;
 
     @PostMapping("/lender-vehicles/{vehicleId}/set-commercial-data")
     @Transactional
@@ -256,6 +262,41 @@ public class LenderController {
         }
     }
 
+    @PostMapping(value = "/lender-vehicles/{vehicleId}/verify-vehicle", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<Object> verifyVehicle(@RequestParam("documentations") List<MultipartFile> files, Principal connectedUser, @PathVariable Long vehicleId) {
+        try {
+            User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
+            if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
+            }
+            Lender lender = user.getLenderProfile();
+            if (lender == null || !lender.getStatus().getEnumLabel().matches("VerifiedLender")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED + " RELATED TO LENDER PROFILE!");
+            }
+            Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
+            if (vehicle == null || lender.getStatus().getEnumLabel().matches("BannedVehicle")) {
+                return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED + " RELATED TO VEHICLE!");
+            }
+            List<ConfidentialFile> confidentialFiles = new ArrayList<>();
+            for (MultipartFile file : files) {
+                confidentialFiles.add(ConfidentialFile.builder()
+                        .name(file.getOriginalFilename())
+                        .vehicle(vehicle)
+                        .type(file.getContentType())
+                        .imageData(ImageUtils.compressImage(file.getBytes())).build());
+            }
+            databaseStorageRepository.saveAll(confidentialFiles);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, "Vehicle FIles uploaded successfuly!", RECORDS_RECEIVED);
+        } catch (PropertyReferenceException e) {
+            log.error(ERROR_OCCURRED, e.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
+        } catch (Exception ex) {
+            log.error(ERROR_OCCURRED, ex.getMessage());
+            return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping("/lender-vehicles/{vehicleId}/delete-vehicle")
     @Transactional
     public ResponseEntity<Object> deleteVehicle(Principal connectedUser, @PathVariable Long vehicleId) {
@@ -285,7 +326,8 @@ public class LenderController {
 
     @PutMapping("/lender-vehicles/{vehicleId}/update-vehicle")
     @Transactional
-    public ResponseEntity<Object> updateVehicle(Principal connectedUser, @PathVariable Long vehicleId, @RequestBody @Valid VehicleDTO vehicleDTO) {
+    public ResponseEntity<Object> updateVehicle(Principal connectedUser, @PathVariable Long
+            vehicleId, @RequestBody @Valid VehicleDTO vehicleDTO) {
         try {
             User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
             if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
@@ -353,7 +395,8 @@ public class LenderController {
     }
 
     @PostMapping("/contract-history/{contractId}/review-renter")
-    public ResponseEntity<Object> reviewRenter(Principal connectedUser, @PathVariable Long contractId, @RequestBody RenterReviewDTO renterReviewDTO) {
+    public ResponseEntity<Object> reviewRenter(Principal connectedUser, @PathVariable Long
+            contractId, @RequestBody RenterReviewDTO renterReviewDTO) {
         try {
             User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
             if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
@@ -392,7 +435,8 @@ public class LenderController {
 
     @PostMapping(value = "/lender-vehicles/{vehicleId}/upload-vehicle-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Object> uploadVehicleImages(@RequestParam("image") List<MultipartFile> files, Principal connectedUser, @PathVariable Long vehicleId) {
+    public ResponseEntity<Object> uploadVehicleImages
+            (@RequestParam("image") List<MultipartFile> files, Principal connectedUser, @PathVariable Long vehicleId) {
         try {
             User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
             if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
@@ -442,7 +486,8 @@ public class LenderController {
 
     @DeleteMapping(value = "/lender-vehicles/{vehicleId}/deleteImage/{imageId}")
     @Transactional
-    public ResponseEntity<Object> vehicleImagesIds(Principal connectedUser, @PathVariable Long vehicleId, @PathVariable Long imageId) {
+    public ResponseEntity<Object> vehicleImagesIds(Principal connectedUser, @PathVariable Long
+            vehicleId, @PathVariable Long imageId) {
         try {
             User user = userRepository.findByUsername(connectedUser.getName()).orElse(null);
             if (user == null || !user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
