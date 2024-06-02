@@ -87,6 +87,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
+    @JsonIgnore
     private Set<Role> roles;
 
     @Override

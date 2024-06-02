@@ -55,12 +55,14 @@ public class VehicleController {
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("vehicleData", vehicle);
                 if (!vehicle.getImages().isEmpty()) {
-                    FileData fileData = vehicle.getImages().stream().filter(elem -> elem.getIsProfileImage()).findFirst().get();
-                    if (fileData != null) {
-                        String filePath = fileData.getFilePath();
+                    Optional<FileData> fileData = vehicle.getImages().stream().filter(elem -> elem.getIsProfileImage()).findFirst();
+                    if (fileData.isPresent()) {
+                        String filePath = fileData.get().getFilePath();
                         byte[] image = Files.readAllBytes(new File(filePath).toPath());
                         String encodedImage = Base64.getEncoder().encodeToString(image);
                         map.put("profileImage", encodedImage);
+                    }else{
+                        map.put("profileImage", "No image");
                     }
                 } else {
                     map.put("profileImage", "No image");
