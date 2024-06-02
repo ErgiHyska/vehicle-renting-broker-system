@@ -123,7 +123,7 @@ public class UserController {
             if (!user.getUserStatus().getEnumLabel().matches("VerifiedUser")) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT VERIFIED!");
             }
-            if (user.getLenderProfile().equals(null)) {
+            if (user.getLenderProfile()==null) {
                 Lender lender = new Lender();
                 lender.setUser(user);
                 lender.setStatus(dataPoolService.findByEnumLabel("unconfirmedLender"));

@@ -18,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
@@ -54,7 +51,7 @@ public class RenterController {
             if (user == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
             }
-            if (user.getRenterProfile() == null || !user.getLenderProfile().getStatus().getEnumLabel().matches("VerifiedRenter")) {
+            if (user.getRenterProfile() == null || !user.getRenterProfile().getStatus().getEnumLabel().matches("VerifiedRenter")) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, ERROR_OCCURRED);
             }
             Vehicle vehicle = vehicleService.getVehicleById(vehicleId);
@@ -72,13 +69,17 @@ public class RenterController {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "Renter is not verified");
             }
             Contract contract = new Contract();
+            contract.setStartDate(contractDTO.getStartDate());
+            contract.setEndDate(contractDTO.getEndDate());
             contract.setRenter(renter);
             contract.setLender(vehicle.getLender());
             contract.setVehicle(vehicle);
             contract.setPricePerDay(vehicle.getVehicleCommerce().getPricePerDay());
-            contract.setStartDate(contractDTO.getStartDate());
-            contract.setEndDate(contractDTO.getStartDate());
-            long daysBetween = ChronoUnit.DAYS.between((java.time.temporal.Temporal) contractDTO.getStartDate(), (Temporal) contractDTO.getStartDate());
+            Date startDateUtil = contractDTO.getStartDate();
+            Date endDateUtil = contractDTO.getEndDate();
+            LocalDate startDate = convertToLocalDateViaInstant(startDateUtil);
+            LocalDate endDate = convertToLocalDateViaInstant(endDateUtil);
+            long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
             contract.setTotal(daysBetween * vehicle.getVehicleCommerce().getPricePerDay());
             DataPool contractualStatus = dataPoolService.findByEnumLabel("Waiting");
             contract.setContractualStatus(contractualStatus);
@@ -93,7 +94,7 @@ public class RenterController {
             Instant instant = zonedDateTime.toInstant();
             notification.setDateReceived(Date.from(instant));
             notificationService.save(notification);
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, renter, RECORD_CREATED);
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, contract, RECORD_CREATED);
         } catch (Exception e) {
             log.error(ERROR_OCCURRED, e.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
@@ -419,4 +420,10 @@ public class RenterController {
 
         }
     }
+    private static LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
+
 }
