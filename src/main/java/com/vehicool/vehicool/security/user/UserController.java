@@ -98,7 +98,7 @@ public class UserController {
             if (user == null) {
                 return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, "USER NOT FOUND!");
             }
-            if (user.getRenterProfile().equals(null)) {
+            if (user.getRenterProfile()==null) {
                 Renter renter = new Renter();
                 renter.setUser(user);
                 renter.setStatus(dataPoolService.findByEnumLabel("unconfirmedRenter"));
