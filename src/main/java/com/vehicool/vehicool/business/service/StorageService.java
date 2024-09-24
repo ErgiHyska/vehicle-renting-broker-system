@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,6 +26,9 @@ public class StorageService {
 
     public FileData getStorageFileById(Long id) {
         return systemStorageRepository.findById(id).orElse(null);
+    }
+    public void saveAllImages(List<FileData> images){
+        systemStorageRepository.saveAll(images);
     }
 
     public FileData saveStorageFile(FileData fileData) {
@@ -84,6 +88,16 @@ public class StorageService {
         String filePath=fileData.get().getFilePath();
         return Files.readAllBytes(new File(filePath).toPath());
     }
+
+//    public List<String> encodeImages(List<Path> imagePaths) throws IOException {
+//        List<String> encodedImages = new ArrayList<>();
+//        for (Path path : imagePaths) {
+//            byte[] imageBytes = Files.readAllBytes(path);
+//            String encodedImage = Base64Utils.encodeToString(imageBytes);
+//            encodedImages.add(encodedImage);
+//        }
+//        return encodedImages;
+//    }
 
 
 

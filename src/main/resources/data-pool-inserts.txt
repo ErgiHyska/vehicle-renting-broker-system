@@ -1,3 +1,8 @@
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'UserStatus', 'unconfirmedUser');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'UserStatus', 'VerifiedUser');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'UserStatus', 'BannedUser');
+INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'UserStatus', 'BanAppealingUser');
+
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'LenderStatus', 'unconfirmedLender');
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'LenderStatus', 'VerifiedLender');
 INSERT INTO public.data_pool (enum_name, enum_label) VALUES( 'LenderStatus', 'BannedLender');

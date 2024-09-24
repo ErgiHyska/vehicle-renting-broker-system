@@ -24,11 +24,9 @@ public class FileData {
     private String type;
     @Column(name = "file_path",nullable = false)
     private String filePath;
+    @Column(name = "is_profile_image",nullable = false)
+    private Boolean isProfileImage;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "lender_id")
-    private Lender lender;
 
     @ManyToOne
     @JsonBackReference

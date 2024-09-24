@@ -4,7 +4,6 @@ package com.vehicool.vehicool.business.querydsl;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.vehicool.vehicool.persistence.entity.QLender;
-import com.vehicool.vehicool.persistence.entity.QVehicle;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -20,16 +19,16 @@ public class LenderQueryDsl implements QueryDsl<LenderFilter> {
 
 
         if (StringUtils.hasText(filter.getFirstName())) {
-            query.and(qLender.firstName.containsIgnoreCase(filter.getFirstName()));
+            query.and(qLender.user.firstname.containsIgnoreCase(filter.getFirstName()));
         }
         if (StringUtils.hasText(filter.getLastName())) {
-            query.and(qLender.lastName.containsIgnoreCase(filter.getLastName()));
+            query.and(qLender.user.lastname.containsIgnoreCase(filter.getLastName()));
         }
         if (StringUtils.hasText(filter.getEmail())) {
-            query.and(qLender.email.containsIgnoreCase(filter.getEmail()));
+            query.and(qLender.user.email.containsIgnoreCase(filter.getEmail()));
         }
         if (StringUtils.hasText(filter.getPhoneNumber())) {
-            query.and(qLender.phoneNumber.containsIgnoreCase(filter.getPhoneNumber()));
+            query.and(qLender.user.phoneNumber.containsIgnoreCase(filter.getPhoneNumber()));
         }
 
         return query;

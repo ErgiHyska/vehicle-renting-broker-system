@@ -1,6 +1,7 @@
 package com.vehicool.vehicool.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.vehicool.vehicool.security.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,10 +23,6 @@ public class DataPool {
     @Column(name = "enum_name",nullable = false)
     private String enumName;
 
-    @OneToMany(mappedBy = "enumLabel")
-    @JsonBackReference
-    private List<TranslatedDataPool> translatedDataPoolList;
-
     @OneToMany(mappedBy = "contractualStatus", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Contract> contractList;
@@ -38,15 +35,19 @@ public class DataPool {
     @JsonBackReference
     private List<Vehicle> locationVehicles;
 
-    @OneToMany(mappedBy = "engineType", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "userStatus", fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<Vehicle> engineTypeVehicles;
+    private List<User> users;
 
-    @OneToMany(mappedBy = "transmissionType", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<Vehicle> transmissionVehicles;
+    private List<Administrator> administrators;
 
-    @OneToMany(mappedBy = "vehicleType", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
     @JsonBackReference
-    private List<Vehicle> vehicleTypeVehicles;
+    private List<Renter> renters;
+
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<Lender> lenders;
 }

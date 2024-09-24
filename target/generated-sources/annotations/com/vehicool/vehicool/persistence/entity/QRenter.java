@@ -22,27 +22,17 @@ public class QRenter extends EntityPathBase<Renter> {
 
     public static final QRenter renter = new QRenter("renter");
 
-    public final NumberPath<Integer> age = createNumber("age", Integer.class);
-
-    public final ListPath<ConfidentialFile, QConfidentialFile> confidentialFiles = this.<ConfidentialFile, QConfidentialFile>createList("confidentialFiles", ConfidentialFile.class, QConfidentialFile.class, PathInits.DIRECT2);
-
     public final ListPath<Contract, QContract> contractSigned = this.<Contract, QContract>createList("contractSigned", Contract.class, QContract.class, PathInits.DIRECT2);
 
-    public final StringPath email = createString("email");
-
-    public final StringPath firstName = createString("firstName");
-
     public final NumberPath<Long> id = createNumber("id", Long.class);
-
-    public final StringPath lastName = createString("lastName");
-
-    public final StringPath phoneNumber = createString("phoneNumber");
 
     public final ListPath<LenderReview, QLenderReview> reviewsGiven = this.<LenderReview, QLenderReview>createList("reviewsGiven", LenderReview.class, QLenderReview.class, PathInits.DIRECT2);
 
     public final ListPath<RenterReview, QRenterReview> reviewsRecieved = this.<RenterReview, QRenterReview>createList("reviewsRecieved", RenterReview.class, QRenterReview.class, PathInits.DIRECT2);
 
     public final QDataPool status;
+
+    public final com.vehicool.vehicool.security.user.QUser user;
 
     public QRenter(String variable) {
         this(Renter.class, forVariable(variable), INITS);
@@ -63,6 +53,7 @@ public class QRenter extends EntityPathBase<Renter> {
     public QRenter(Class<? extends Renter> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.status = inits.isInitialized("status") ? new QDataPool(forProperty("status")) : null;
+        this.user = inits.isInitialized("user") ? new com.vehicool.vehicool.security.user.QUser(forProperty("user"), inits.get("user")) : null;
     }
 
 }

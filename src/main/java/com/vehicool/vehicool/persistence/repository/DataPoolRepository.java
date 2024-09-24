@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface DataPoolRepository extends JpaRepository<DataPool,Long> {
     List<DataPool> findAllByEnumName(String enumName);
+    DataPool findByEnumLabel(String enumLabel);
 }

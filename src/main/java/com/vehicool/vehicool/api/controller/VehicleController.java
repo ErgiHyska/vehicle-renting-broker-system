@@ -1,33 +1,29 @@
 package com.vehicool.vehicool.api.controller;
 
-import com.vehicool.vehicool.api.dto.VehicleDTO;
 import com.vehicool.vehicool.business.querydsl.VehicleFilter;
 import com.vehicool.vehicool.business.service.DataPoolService;
 import com.vehicool.vehicool.business.service.StorageService;
 import com.vehicool.vehicool.business.service.VehicleService;
+import com.vehicool.vehicool.persistence.entity.FileData;
 import com.vehicool.vehicool.persistence.entity.Vehicle;
 import com.vehicool.vehicool.util.mappers.ResponseMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.mapping.PropertyReferenceException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.util.*;
+
 import static com.vehicool.vehicool.util.constants.Messages.*;
 
 @Slf4j
@@ -50,21 +46,46 @@ public class VehicleController {
                                        @RequestParam(defaultValue = "10") Integer size,
                                        @RequestParam(defaultValue = "id") String sort) {
         try {
-            VehicleFilter companyFilter = modelMapper.map(vehicleFilterRequest, VehicleFilter.class);
+            VehicleFilter vehicleFilter = modelMapper.map(vehicleFilterRequest, VehicleFilter.class);
             Pageable pageRequest = PageRequest.of(page, size, Sort.by(sort));
-            Page<Vehicle> vehiclePage = vehicleService.findAll(companyFilter, pageRequest);
+            Page<Vehicle> vehiclePage = vehicleService.findAll(vehicleFilter, pageRequest);
+            List<Vehicle> vehicles = vehiclePage.getContent();
+            List<HashMap<String, Object>> response = new ArrayList<>();
+            for (Vehicle vehicle : vehicles) {
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("vehicleData", vehicle);
+                if (!vehicle.getImages().isEmpty()) {
+                    Optional<FileData> fileData = vehicle.getImages().stream().filter(elem -> elem.getIsProfileImage()).findFirst();
+                    if (fileData.isPresent()) {
+                        String filePath = fileData.get().getFilePath();
+                        byte[] image = Files.readAllBytes(new File(filePath).toPath());
+                        String encodedImage = Base64.getEncoder().encodeToString(image);
+                        map.put("profileImage", encodedImage);
+                    }else{
+                        map.put("profileImage", "No image");
+                    }
+                } else {
+                    map.put("profileImage", "No image");
+                }
+                response.add(map);
 
-            return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehiclePage, RECORDS_RECEIVED);
-        } catch (PropertyReferenceException e) {
+            }
+            Page<HashMap<String, Object>> responsebody = new PageImpl<>(response, pageRequest, vehicles.size());
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, responsebody, RECORDS_RECEIVED);
+        } catch (
+                PropertyReferenceException e) {
             log.error(ERROR_OCCURRED, e.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.BAD_REQUEST, null, e.getMessage());
-        } catch (Exception ex) {
+        } catch (
+                Exception ex) {
             log.error(ERROR_OCCURRED, ex.getMessage());
             return ResponseMapper.map(FAIL, HttpStatus.INTERNAL_SERVER_ERROR, null, SERVER_ERROR);
         }
+
     }
+
     @GetMapping("/get/{id}")
-    public ResponseEntity<Object> get(@PathVariable Long id)  {
+    public ResponseEntity<Object> get(@PathVariable Long id) {
         try {
             Vehicle vehicle = vehicleService.getVehicleById(id);
             return ResponseMapper.map(SUCCESS, HttpStatus.OK, vehicle, RECORD_CREATED);
@@ -74,22 +95,22 @@ public class VehicleController {
 
         }
     }
-//    @GetMapping("/{id}/images")
-//    public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable Long id) throws IOException {
-//        List<byte[]> images = vehicleService.downloadVehiclePicturesById(id);
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .contentType(MediaType.valueOf("image/png")).body(images.get(0));
-//    }
-@GetMapping("/{vehicleId}/images")
-public ResponseEntity<List<byte[]>> getVehicleImages(@PathVariable Long vehicleId) {
-    try {
-        List<byte[]> images = vehicleService.downloadImageFromFileSystem(vehicleId);
-        if (images == null || images.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+    @GetMapping("/{vehicleId}/images")
+    public ResponseEntity<Object> getVehicleImages(@PathVariable Long vehicleId) {
+        try {
+            List<byte[]> images = vehicleService.downloadImageFromFileSystem(vehicleId);
+            if (images == null || images.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            List<String> encodedImages = new ArrayList<>();
+            for (byte[] image : images) {
+                String encodedImage = Base64.getEncoder().encodeToString(image);
+                encodedImages.add(encodedImage);
+            }
+            return ResponseMapper.map(SUCCESS, HttpStatus.OK, encodedImages, "Images received!");
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(images, new HttpHeaders(), HttpStatus.OK);
-    } catch (IOException e) {
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
-}
 }

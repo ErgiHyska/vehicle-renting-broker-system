@@ -55,16 +55,6 @@ public class RenterService {
         return renterRepository.contractRequests(renterId, statusId);
     }
 
-    public List<byte[]> getRenterConfidentialFiles(Long renterId) {
-        Renter renter = getRenterById(renterId);
-        List<byte[]> images = new ArrayList<>();
-        List<ConfidentialFile> renterConfidentialFiled = renter.getConfidentialFiles();
-        for (ConfidentialFile currentFile : renterConfidentialFiled) {
-            byte[] image = ImageUtils.decompressImage(currentFile.getImageData());
-            images.add(image);
-        }
-        return images;
-    }
 
 //    public String uploadRenterConfidentialFile(List<MultipartFile> file, Long renterId) throws IOException {
 //        Renter renter = getRenterById(renterId);
@@ -81,21 +71,5 @@ public class RenterService {
 //        }
 //        return null;
 //    }
-    @Transactional
-    public String uploadRenterConfidentialFile(List<MultipartFile> file, Long renterId) throws IOException {
-        Renter renter = getRenterById(renterId);
-        if (renter == null) {
-            return "Failed to upload! Wrong renter ID";
-        }
-        List<ConfidentialFile> list = new ArrayList<>();
-        for(MultipartFile current:file){
-            ConfidentialFile confidentialFile =ConfidentialFile.builder().name(current.getOriginalFilename()).type(current.getContentType()).renter(renter).imageData(ImageUtils.compressImage(current.getBytes())).build();
-            list.add(confidentialFile);
-        }
-        databaseStorageRepository.saveAll(list);
-        if (!list.isEmpty()) {
-            return "file uploaded successfully !";
-        }
-        return null;
-    }
+
 }

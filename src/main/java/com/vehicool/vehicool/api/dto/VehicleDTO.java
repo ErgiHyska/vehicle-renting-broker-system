@@ -19,6 +19,9 @@ public class VehicleDTO {
     @NotNull(message = "Model is required!")
     private String model;
 
+    @NotNull(message = "PlateNo is required!")
+    private String plateNo;
+
     @NotNull(message = "Vehicle type Id is required!")
     private Long vehicleTypeId;
 

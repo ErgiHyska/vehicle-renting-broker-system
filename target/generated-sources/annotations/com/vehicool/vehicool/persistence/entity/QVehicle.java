@@ -46,6 +46,8 @@ public class QVehicle extends EntityPathBase<Vehicle> {
 
     public final NumberPath<Long> noOfSeats = createNumber("noOfSeats", Long.class);
 
+    public final StringPath plateNo = createString("plateNo");
+
     public final NumberPath<Long> productionYear = createNumber("productionYear", Long.class);
 
     public final QDataPool status;

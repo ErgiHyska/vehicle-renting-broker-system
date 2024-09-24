@@ -54,33 +54,6 @@ public class LenderService {
         return lenderRepository.contractRequests(lenderId, statusId);
     }
 
-    @Transactional
-    public String uploadLenderConfidentialFile(List<MultipartFile> file, Long lenderId) throws IOException {
-        Lender lender = getLenderById(lenderId);
-        if (lender == null) {
-            return "Failed to upload! Wrong lender ID";
-        }
-        List<ConfidentialFile> list = new ArrayList<>();
-        for(MultipartFile current:file){
-            ConfidentialFile confidentialFile =ConfidentialFile.builder().name(current.getOriginalFilename()).type(current.getContentType()).lender(lender).imageData(ImageUtils.compressImage(current.getBytes())).build();
-            list.add(confidentialFile);
-        }
-        databaseStorageRepository.saveAll(list);
-        if (!list.isEmpty()) {
-            return "file uploaded successfully !";
-        }
-        return null;
-    }
 
-    public List<byte[]> getLenderConfidentialFiles(Long lenderId) {
-        Lender lender = getLenderById(lenderId);
-        List<byte[]> images = new ArrayList<>();
-        List<ConfidentialFile> lenderConfidentialFiled=lender.getConfidentialFiles();
-        for(ConfidentialFile currentFile:lenderConfidentialFiled){
-            byte[] image = ImageUtils.decompressImage(currentFile.getImageData());
-            images.add(image);
-        }
-        return images;
-    }
 
 }

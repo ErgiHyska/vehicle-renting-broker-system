@@ -1,6 +1,7 @@
 package com.vehicool.vehicool.persistence.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.vehicool.vehicool.security.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,20 +17,11 @@ public class Lender {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="first_name")
-    private String firstName;
 
-    @Column(name="last_name")
-    private String lastName;
-
-    @Column(name="age")
-    private Integer age;
-
-    @Column(name="email")
-    private String email;
-
-    @Column(name="phone_number")
-    private String phoneNumber;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "status")
@@ -46,9 +38,6 @@ public class Lender {
     @OneToMany(mappedBy ="lender")
     @JsonBackReference
     private List<LenderReview> reviewsRecieved;
-
-    @OneToMany(mappedBy ="lender")
-    private List<ConfidentialFile> confidentialFiles;
 
     @OneToMany(mappedBy ="lender")
     @JsonBackReference

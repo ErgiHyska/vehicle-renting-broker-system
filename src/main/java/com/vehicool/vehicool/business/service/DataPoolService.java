@@ -32,5 +32,12 @@ public class DataPoolService {
         return dataPoolRepository.findAllByEnumName(enumName);
     }
 
+    public DataPool findByEnumLabel(String enumLabel){
+        return dataPoolRepository.findByEnumLabel(enumLabel);
+    }
+    public Long totalElements(){
+        return dataPoolRepository.count();
+    }
+
 
 }

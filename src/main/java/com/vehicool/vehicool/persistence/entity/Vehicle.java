@@ -35,6 +35,9 @@ public class Vehicle {
     @Column(name="no_of_seats",nullable = false)
     private Long noOfSeats;
 
+    @Column(name="plate_number",nullable = false)
+    private String plateNo;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "status")
     private DataPool status;
@@ -54,13 +57,16 @@ public class Vehicle {
     @JsonIgnore
     private Lender lender;
 
-    @OneToMany(mappedBy ="vehicle")
+    @OneToMany(fetch = FetchType.LAZY,mappedBy ="vehicle")
+    @JsonIgnore
     private List<Contract> contractSigned;
 
     @OneToMany(mappedBy ="vehicle")
+    @JsonIgnore
     private List<ConfidentialFile> vehicleRegistrations;
 
     @OneToMany(mappedBy ="vehicle")
+    @JsonIgnore
     private List<FileData> images;
 
     @OneToOne(mappedBy ="vehicle")

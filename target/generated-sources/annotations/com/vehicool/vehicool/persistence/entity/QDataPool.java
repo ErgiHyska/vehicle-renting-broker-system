@@ -20,6 +20,8 @@ public class QDataPool extends EntityPathBase<DataPool> {
 
     public static final QDataPool dataPool = new QDataPool("dataPool");
 
+    public final ListPath<Administrator, QAdministrator> administrators = this.<Administrator, QAdministrator>createList("administrators", Administrator.class, QAdministrator.class, PathInits.DIRECT2);
+
     public final ListPath<Contract, QContract> contractList = this.<Contract, QContract>createList("contractList", Contract.class, QContract.class, PathInits.DIRECT2);
 
     public final ListPath<Vehicle, QVehicle> engineTypeVehicles = this.<Vehicle, QVehicle>createList("engineTypeVehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
@@ -30,11 +32,15 @@ public class QDataPool extends EntityPathBase<DataPool> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final ListPath<Lender, QLender> lenders = this.<Lender, QLender>createList("lenders", Lender.class, QLender.class, PathInits.DIRECT2);
+
     public final ListPath<Vehicle, QVehicle> locationVehicles = this.<Vehicle, QVehicle>createList("locationVehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
+
+    public final ListPath<Renter, QRenter> renters = this.<Renter, QRenter>createList("renters", Renter.class, QRenter.class, PathInits.DIRECT2);
 
     public final ListPath<Vehicle, QVehicle> statusVehicles = this.<Vehicle, QVehicle>createList("statusVehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
 
-    public final ListPath<TranslatedDataPool, QTranslatedDataPool> translatedDataPoolList = this.<TranslatedDataPool, QTranslatedDataPool>createList("translatedDataPoolList", TranslatedDataPool.class, QTranslatedDataPool.class, PathInits.DIRECT2);
+    public final ListPath<com.vehicool.vehicool.security.user.User, com.vehicool.vehicool.security.user.QUser> users = this.<com.vehicool.vehicool.security.user.User, com.vehicool.vehicool.security.user.QUser>createList("users", com.vehicool.vehicool.security.user.User.class, com.vehicool.vehicool.security.user.QUser.class, PathInits.DIRECT2);
 
     public final ListPath<Vehicle, QVehicle> transmissionVehicles = this.<Vehicle, QVehicle>createList("transmissionVehicles", Vehicle.class, QVehicle.class, PathInits.DIRECT2);
 
